@@ -4,7 +4,7 @@ public class BotDriver {
 	public static void main(String[] args) {
 		String oAuth = "";
 		
-		if (args.length == 1) {
+		if (args.length < 2) {
 			BotDriver.CHANNEL_NAME = "#hekimae";
 			oAuth = args[0];
 		} else {

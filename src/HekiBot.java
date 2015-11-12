@@ -40,7 +40,8 @@ public class HekiBot extends PircBot {
 	private String clearQCmd = "!clearq";
 	private String leaveQCmd1 = "!leaveq";
 	private String leaveQCmd2 = "!qleave";
-	private String commandsCmd = "!qhelp";
+	private String commandsCmd1 = "!qhelp";
+	private String commandsCmd2 = "!commands";
 	private String gNightCmd = "!quit";
 	private String lastGameCmd = "!lastgame";
 	private String modNightCmd = "!MODNIGHT";
@@ -69,12 +70,6 @@ public class HekiBot extends PircBot {
 		}
 	}
 
-	@Override
-	protected void onAction(String sender, String login, String hostname, String target, String action) {
-		// TODO Auto-generated method stub
-		super.onAction(sender, login, hostname, target, action);
-	}
-
 	@Override 
 	protected void onMessage(String channel, String sender, String login,
 			String hostname, String message) {
@@ -92,14 +87,13 @@ public class HekiBot extends PircBot {
 				if (message.equalsIgnoreCase(gNightCmd)) {
 					sendMessageAndPrint(channel, "G'NIGHT ResidentSleeper");
 					try {
-						wait(500);
+						Thread.sleep(500);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
+					} finally {
+						this.dispose();
 					}
-					this.disconnect();
-					this.dispose();
-					System.exit(0);
-				}
+				} 
 				
 				if (message.equalsIgnoreCase(lastGameCmd)) {
 					if (!isLastGame) {
@@ -193,7 +187,7 @@ public class HekiBot extends PircBot {
 				sendMessageAndPrint(channel, "We have changed the command to !q, " + sender + ".");
 			}
 			
-			if (message.equalsIgnoreCase(commandsCmd)) {
+			if (message.equalsIgnoreCase(commandsCmd1) || message.equalsIgnoreCase(commandsCmd2)) {
 				sendMessageAndPrint(channel, "Available commands: !q, !q+1, !q+2, !qlist (mods only), !qpos, !leaveq");
 			}
 		}
