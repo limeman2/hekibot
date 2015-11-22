@@ -7,67 +7,70 @@ public class Queue {
 		entries = new ArrayList<QueueEntry>();
 	}
 	
-	public String nextQueue(int entryAmount) {
-		StringBuilder sb = new StringBuilder();
+	public String[] pickFromQueue (int amount) {
+		String[] result = new String[amount];
+		int resultIndex = 0;
 		int c = 0;
-		for (int i = 0; c != entryAmount && (i < entries.size()) ; ) {
+		for (int i = 0; c != amount && (i < entries.size()) ; ) {
 			QueueEntry e = entries.get(i);
-			if (c + e.getSpace() <= entryAmount) {
-				c += e.getSpace();
-				StringBuilder sbPlus = new StringBuilder();
-				if (e.getSpace() != 1) {
-					sbPlus.append(" +").append(e.getSpace() - 1);
-				}
+			
+			if (c + e.size() <= amount) {
+				c += e.size();
 				
-				if (c == entryAmount && e.getSpace() != entryAmount) {
-					sb.append(" and ").append(entries.remove(i).getName()).append(sbPlus);
-					break;
+				for (int k = 0; k < e.size(); k++) {
+					result[resultIndex] = e.getNames().get(k);
+					resultIndex++;
 				}
-				else if (sb.toString().equals(""))
-					sb.append(entries.remove(i).getName()).append(sbPlus);
-				else
-					sb.append(", ").append(entries.remove(i).getName()).append(sbPlus);
-				if (c == entryAmount)
+				entries.remove(i);	
+				
+				if (c == amount)
 					break;
-			}
-			else
+			} else {
 				i++;
+			}
 		}
-		
-		sb.append(" has been selected from the queue!");
-		
-		if (c != entryAmount)
-			sb.append(" I could not pick " + entryAmount + " people from the queue.");
-		
-		return sb.toString();
+			
+		return result;
 	}
 	
-	public String addEntry(String name, int space) {
-		space++;
-		if (space > 3)
-			return "Sorry, you can not bring more than 2 friends, " + name + " FailFish";
-		
-		if (space < 1)
-			return "Don't be silly, " + name + ".";
+	public String addEntry(String[] names) {
+		if (names.length > 3) {
+			return "Sorry, you can not bring more than 2 friends, " + names[0] + " FailFish";
+		}
 		
 		for (QueueEntry e : entries) {
-			if (e.getName().equals(name)) {
-				return "You are already in the queue, " + name + ". You are currently number " + queuePosition(name) + " in the queue.";
+			String s = e.search(names);
+			if (s != null) {
+				return s + " is already in the queue!";
 			}
 		}
-		entries.add(new QueueEntry(name, space));
-		return "You have been added to the queue, " + name + ". You are currently number " + this.queuePosition(name) + " in the queue.";
+		
+		QueueEntry qe = new QueueEntry(names);
+		entries.add(qe);
+		
+		return qe + " has been added to the queue at number " + queuePosition(names[0]) + "!";		
 	}
 	
 	public int queuePosition(String name) {
 		int c = 1;
 		for (QueueEntry e : entries) {
-			if (name.equals(e.getName())) 
-				return c;
-			
-			c += e.getSpace();
+			for (String n : e.getNames()) {
+				if (name.equals(n)) 
+					return c;
+				c++;
+			}
 		}
 		return 0;
+	}
+	
+	public String search(String[] names) {
+		for (QueueEntry e : entries) {
+			String s = e.search(names);
+			if (s != null) {
+				return s;
+			}
+		}
+		return null;
 	}
 	
 	public String queueList() {
@@ -75,25 +78,65 @@ public class Queue {
 		if (entries.isEmpty())
 			return "The queue is empty.";
 		
-		for (QueueEntry e : entries) {
-			if (e.getSpace() > 1) {
-				sb.append(e.getName()).append(" +").append(e.getSpace() - 1);
-			} else {
-				sb.append(e.getName());
+		for (int i = 0; i < entries.size(); i++) {
+			sb.append(entries.get(i));
+			if (i != entries.size() - 1) sb.append(",");
+			sb.append(" ");
+		}
+		
+		return sb.toString();
+	} 
+	
+	public String indexedList() {
+		int i = 0;
+		StringBuilder sb = new StringBuilder();
+		for (QueueEntry qe : entries) {
+			for (String s : qe.getNames()) {
+				sb.append(i).append(": ").append(s).append("\n");
+				i++;
 			}
-			
-			if (!entries.get(entries.size() - 1).equals(e))
-				sb.append(", ");
-			
 		}
 		return sb.toString();
+	}
+	
+	public String removeFromQueue(String sender, String playerToRemove) {
+		boolean playerFound = false;
+		int i = 0;
+		for (QueueEntry e : entries) {
+			for (String n : e.getNames()) {
+				if (n.equals(sender)) {
+					playerFound = true;
+					for (String n1 : e.getNames()) {
+						if (n1.equals(playerToRemove)) {
+							e.removePlayer(playerToRemove);
+							if (e.size() == 0) entries.remove(i);
+							return playerToRemove + " has been removed from the queue! ";
+						}
+					}
+				}
+			}
+			i++;
+		}
+		
+		if (playerFound) {
+			return "You can't remove that player, " + sender + "! ";
+		} else {
+			return "You are not even in the queue, " + sender + "! ";
+		}
+		
 	}
 	
 	public String leaveQueue(String sender) {
 		int i = 0;
 		for (QueueEntry e : entries) {
-			if (e.getName().equals(sender)) {
-				return ("You have left the queue, " + entries.remove(i).getName() + ".");
+			for (String n : e.getNames()) {
+				if (n.equals(sender)) {
+					if (e.size() == 1) {
+						return "You have left the queue, " + entries.remove(i).getNames().get(0) + ".";
+					} else {
+						return "You have left the queue, " + e.removePlayer(sender) + ".";
+					}	
+				}
 			}
 			i++;
 		}

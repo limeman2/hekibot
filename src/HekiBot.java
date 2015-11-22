@@ -1,5 +1,5 @@
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 import org.jibble.pircbot.PircBot;
 
@@ -14,7 +14,7 @@ public class HekiBot extends PircBot {
 	///// Mods and people
 	private String heki = "hekimae";
 	private String lime = "limeman2";
-	private String hekibotName = "hekibot";
+	//private String hekibotName = "hekibot";
 	private static String[] MOD_LIST = {
 			"hekimae",
 			"7updiet",
@@ -34,9 +34,9 @@ public class HekiBot extends PircBot {
 	////////// Command strings ///////////
 	private String queueCmd = "!q";
 	private String oldCmd = "!queue";
+	private String oldQPlusXcmd = "!q\\+";
 	private String qListCmd = "!qlist";
 	private String qPosCmd = "!qpos";
-	//private String nextQCmd = "!nextq";
 	private String clearQCmd = "!clearq";
 	private String leaveQCmd1 = "!leaveq";
 	private String leaveQCmd2 = "!qleave";
@@ -47,14 +47,24 @@ public class HekiBot extends PircBot {
 	private String modNightCmd = "!MODNIGHT";
 	
 	////// Misc vars 
+	private ViewerGame currentGame;
 	private boolean isLastGame = false;
 	private boolean isModNight = false;
-	private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-	private Calendar rightNow = Calendar.getInstance();
+	private boolean queueIsOpen;
+	private String reasonForClosedQueue;
+	private final String UNKNOWN_REASON = "the queue is closed right now!";
+	//private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+	//private Calendar rightNow = Calendar.getInstance();
+	
+	public HekiBot(boolean queueIsOpen) {
+		this.setName("hekibot");
+		reasonForClosedQueue = UNKNOWN_REASON;
+		q = new Queue();
+		this.queueIsOpen = queueIsOpen;
+	}
 	
 	public HekiBot() {
-		this.setName("hekibot");
-		q = new Queue();
+		this(true);
 	}
 	
 	@Override
@@ -73,88 +83,90 @@ public class HekiBot extends PircBot {
 	@Override 
 	protected void onMessage(String channel, String sender, String login,
 			String hostname, String message) {
-		if (!sender.equals(hekibotName)) showChatMessage(sender, message);
 		
 		if (message.startsWith("!")) {				
 			if ((sender.equals(heki) || sender.equals(lime))) {
 				if (message.equalsIgnoreCase(clearQCmd))
 					sendMessageAndPrint(channel, q.clearQueue());
 				
-				if (message.matches("!nextq \\d")) {
-					sendMessageAndPrint(channel, q.nextQueue(Integer.parseInt(Character.toString(message.charAt(7)))));
-				}
-				
 				if (message.equalsIgnoreCase(gNightCmd)) {
-					sendMessageAndPrint(channel, "G'NIGHT ResidentSleeper");
-					try {
-						Thread.sleep(500);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					} finally {
-						this.dispose();
-					}
+					shutDown();
 				} 
 				
 				if (message.equalsIgnoreCase(lastGameCmd)) {
 					if (!isLastGame) {
 						sendMessageAndPrint(channel, "This will be the last game, folks! Sorry if you're still in queue :(");
+						reasonForClosedQueue = "this is the last game for tonight!";
 						isLastGame = true;
+						queueIsOpen = false;
 					} else {
 						sendMessageAndPrint(channel, "Nevermind! We'll play some more.");
+						reasonForClosedQueue = UNKNOWN_REASON;
 						isLastGame = false;
+						queueIsOpen = true;
 					}
 				}
 				
 				if (message.equalsIgnoreCase(modNightCmd)) {
 					if (!isModNight) {
-						sendMessageAndPrint(channel, "IT'S MOD NIGHT, LADIES AND GENTLEMEN!");
+						sendMessageAndPrint(channel, "IT'S MOD NIGHT, LADIES AND GENTLEMEN! ");
 						isModNight = true;
 					} else {
-						sendMessageAndPrint(channel, "MOD NIGHT IS NOW OVER, FOLKS!");
+						sendMessageAndPrint(channel, "MOD NIGHT IS NOW OVER, FOLKS! ");
 						isModNight = false;
 					}
 					
 				}
 			}
 			
-			if (message.equalsIgnoreCase(queueCmd)) {
-				if (isModNight) {
-					if (isOp(sender)) {
-						if (!isLastGame) {
-							sendMessageAndPrint(channel, q.addEntry(sender, 0));
-						} else {
-							sendMessageAndPrint(channel, "Sorry! This is the last game, " + sender);
-						}
-					} else {
-						sendMessageAndPrint(channel, "Sorry, " + sender + ", tonight is MOD NIGHT!");
-					}
-				} else {
-					if (!isLastGame) {
-						sendMessageAndPrint(channel, q.addEntry(sender, 0));
-					} else {
-						sendMessageAndPrint(channel, "Sorry! This is the last game, " + sender);
-					}
-				}
+			if (message.matches(oldQPlusXcmd + "\\d")) {
+				sendMessageAndPrint(channel, sender + ", you have to write your friends twitch name instead of the number. For example: !q+Riggso99 or !q+HenryJill+BX3EspEn ");
 			}
 			
-			if (message.matches("!q\\+\\d")) {
+			if ((message.equalsIgnoreCase(queueCmd) || message.matches(queueCmd + "\\+.*")) && !message.matches(oldQPlusXcmd + "\\d")) {
+				Scanner scan = new Scanner(message);
+				scan.useDelimiter("\\+");
+				scan.next();
+				ArrayList<String> players = new ArrayList<String>();
+				players.add(sender);
+				
+				while(scan.hasNext()) {
+					players.add(scan.next().toLowerCase());
+				}
+				
+				String[] playersArray = new String[players.size()];
+				
+				for(int i = 0; i < players.size(); i++) {
+					playersArray[i] = players.get(i).toLowerCase();
+				}
+					
 				if (isModNight) {
 					if (isOp(sender)) {
-						if (!isLastGame) {
-							sendMessageAndPrint(channel, q.addEntry(sender, Integer.parseInt(Character.toString(message.charAt(3)))));
+						if (queueIsOpen) {
+							sendMessageAndPrint(channel, q.addEntry(playersArray));
 						} else {
-							sendMessageAndPrint(channel, "Sorry! This is the last game, " + sender);
+							sendMessageAndPrint(channel, "Sorry, " + sender + ", " + reasonForClosedQueue + " ");
 						}
 					} else {
-						sendMessageAndPrint(channel, "Sorry, " + sender + ", tonight is MOD NIGHT!");
-					}
+							sendMessageAndPrint(channel, "Sorry, " + sender + ", tonight is MOD NIGHT!" + " ");
+						}
 				} else {
-					if (!isLastGame) {
-						sendMessageAndPrint(channel, q.addEntry(sender, Integer.parseInt(Character.toString(message.charAt(3)))));
+					if (queueIsOpen) {
+						if (currentGame != null && currentGame.isInGame(playersArray)) {
+							sendMessageAndPrint(channel, "You are already playing, " + sender + "!!!" + " ");
+						} else {
+							String output = q.addEntry(playersArray);
+							sendMessageAndPrint(channel, output + " ");
+						}
 					} else {
-						sendMessageAndPrint(channel, "Sorry! This is the last game, " + sender);
+						sendMessageAndPrint(channel, "Sorry, " + sender + ", " + reasonForClosedQueue + " ");
 					}
-				}		
+				}
+				scan.close();
+			}	
+			
+			if (message.matches(queueCmd + "\\-.*")) {
+				sendMessageAndPrint(channel, q.removeFromQueue(sender, message.substring(3)));
 			}
 			
 			if (message.equalsIgnoreCase(qListCmd) && isOp(sender)) {
@@ -188,17 +200,75 @@ public class HekiBot extends PircBot {
 			}
 			
 			if (message.equalsIgnoreCase(commandsCmd1) || message.equalsIgnoreCase(commandsCmd2)) {
-				sendMessageAndPrint(channel, "Available commands: !q, !q+1, !q+2, !qlist (mods only), !qpos, !leaveq");
+				sendMessageAndPrint(channel, "Available commands: !q, !q+[name], !q+[name1]+[name2], !qlist (mods only), !qpos, !leaveq");
 			}
 		}
 	} 
 	
-	private void showChatMessage(String sender, String message) {
-		System.out.println(timeFormat.format(rightNow.getTime()) + " | " + sender + ": " + message);
+	///////// Below: functions to be used by me in the console window
+	
+	public String addToQueue(String[] players) {
+		return q.addEntry(players);
+	}
+	
+	public void newViewerGame(ViewerGame vg) {
+		this.currentGame = vg;
+	}
+	
+	public String[] pickFromQueue(int amount) {
+		return q.pickFromQueue(amount);
+	}
+	
+	public void removeFromQueue(String name) {
+		q.removeFromQueue(name, name);
+	}
+	
+	public String getQueueList() {
+		return q.queueList();
+	}
+	
+	public String getIndexedList() {
+		return q.indexedList();
+	}
+	
+	public boolean isPaused() {
+		return !queueIsOpen;
+	}
+	
+	public void togglePause() {
+		queueIsOpen = !queueIsOpen;
+	}
+	
+	public void shutDown() {
+		sendMessageAndPrint(BotDriver.CHANNEL_NAME, "G'NIGHT ResidentSleeper");
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} finally {
+			this.dispose();
+		}
+	}
+	
+	public void sendQueueList() {
+		sendMessage(BotDriver.CHANNEL_NAME, "The queue: " + q.queueList());
+	}
+	
+	public void clearQueue() {
+		sendMessage(BotDriver.CHANNEL_NAME, "The queue has been cleared!");
+		q.clearQueue();
+	}
+	
+	public void printCurrentGame() {
+		if (currentGame == null) {
+			System.out.println("There is no current game!");
+		} else {
+			this.currentGame.printPlayers();
+		}
 	}
 	
 	private void sendMessageAndPrint(String channel, String message) {
-		showChatMessage("hekibot", message);
+		//showChatMessage("hekibot", message);
 		sendMessage(channel, message);
 	}
 	
