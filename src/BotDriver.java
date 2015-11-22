@@ -21,10 +21,6 @@ public class BotDriver {
 	}
 	
 	public static void main(String[] args) { 
-		String[] s = {"hekimae", "7updiet", "mindfartio"};
-		String[] s2 = {"bx3waage"};
-		String[] s3 = {"carsil_senpai2", "centane"};
-		
 		String oAuth = "";
 		
 		if (args.length < 2) {
@@ -44,17 +40,12 @@ public class BotDriver {
 		
 		Scanner reader;
 		
-		
 		try {
 			bot.connect(host, port, oAuth);
 			bot.joinChannel(CHANNEL_NAME);
 			bot.sendMessage(CHANNEL_NAME, "HeyGuys ");
 			System.out.println("hekibot is up and running!");
 			System.out.println(bot.toString());
-			
-			bot.addToQueue(s);
-			bot.addToQueue(s2);
-			bot.addToQueue(s3);
 			
 			while (true) {
 				System.out.println();
