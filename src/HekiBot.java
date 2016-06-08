@@ -89,7 +89,7 @@ public class HekiBot extends PircBot {
 			String hostname, String message) {
 		////////// hekiCoin commands ///////////
 		if (message.equalsIgnoreCase(hcTestCmd)) {
-			sendMessageAndPrint(channel, "!hekicoins remove " + sender + " 1");
+			sendMessageAndPrint(channel, "!hekicoins remove " + sender + " 2");
 			try {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
