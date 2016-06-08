@@ -60,6 +60,9 @@ public class HekiBot extends PircBot {
 	private int hcSongCost = 10;
 	private String hcSongResponse = " has just bought a song request for 10 hekicoins!";
 	
+	private String hcNameCmd = "!hcname";
+	private int hcNameCost = 50;
+	private String hcNameResponse = " gets their name on the screen for 50 hekicoins!";
 	
 	private String hcMapCmd = "!hcmap";
 	private int hcMapCost = 100;
@@ -166,11 +169,9 @@ public class HekiBot extends PircBot {
 			}
 			scan.close();
 			
-			sendMessageAndPrint(channel, "/me " + buyer + hcResponses.get(cost));
-		}
-		
-		if (message.matches("Removed \\d* hekicoins from .*") && sender.equals(hekibot)) {
+			String costString = hcResponses.get(cost);
 			
+			if (costString != null) sendMessageAndPrint(channel, "/me " + buyer + costString);
 		}
 		
 		////////// Queue commands ///////////
