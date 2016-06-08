@@ -66,6 +66,8 @@ public class HekiBot extends PircBot {
 	private String[] hcCommands = { hcSongCmd, hcMapCmd };
 	private int[] hcCosts = { hcSongCost, hcMapCost };
 	
+	private String hcErrorResponse = "An error has occured. Abort mission!";
+	
 	////// Misc vars 
 	private ViewerGame currentGame;
 	private boolean isLastGame = false;
@@ -81,6 +83,7 @@ public class HekiBot extends PircBot {
 		reasonForClosedQueue = UNKNOWN_REASON;
 		q = new Queue();
 		this.queueIsOpen = queueIsOpen;
+		hcResponses.put(-1, hcErrorResponse)
 		hcResponses.put(hcSongCost, hcSongResponse);
 		hcResponses.put(hcMapCost, hcMapResponse);
 	}
@@ -116,9 +119,19 @@ public class HekiBot extends PircBot {
 		}
 		
 		if (message.matches("Removed \\d* hekicoins from .*") && sender.equals(hekibot)) {
-			sendMessageAndPrint(channel, "test");
 			Scanner scan = new Scanner(message);
-			int cost = scan.nextInt();
+			int cost = -1;
+			
+			while (scan.hasNext()) {
+				if (scan.hasNextInt()) {
+					cost = scan.nextInt();
+					break;
+				 }
+				 
+				 scan.next();
+			}
+			scan.close();
+			
 			sendMessageAndPrint(channel, hcResponses.get(cost));
 		}
 		
