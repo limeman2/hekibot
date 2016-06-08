@@ -53,10 +53,7 @@ public class HekiBot extends PircBot {
 	////////// hekiCoins command strings ///////////
 	private String hcRemove = "!hekicoins remove ";
 	
-	HashMap<Integer, String> hcCommands = new HashMap<Integer, String>();
-	
-	private String hcTestCmd = "!hctest";
-	private int hcTestCost = 2;
+	HashMap<Integer, String> hcResponses = new HashMap<Integer, String>();
 	
 	private String hcSongCmd = "!hcsong";
 	private int hcSongCost = 10;
@@ -65,6 +62,9 @@ public class HekiBot extends PircBot {
 	private String hcMapCmd = "!hcmap";
 	private int hcMapCost = 100;
 	private String hcMapResponse = " has just picked the next map for 100 hekicoins!";
+	
+	private String[] hcCommands = { hcSongCmd, hcMapCmd };
+	private int[] hcCosts = { hcSongCost, hcMapCost };
 	
 	////// Misc vars 
 	private ViewerGame currentGame;
@@ -81,8 +81,8 @@ public class HekiBot extends PircBot {
 		reasonForClosedQueue = UNKNOWN_REASON;
 		q = new Queue();
 		this.queueIsOpen = queueIsOpen;
-		hcCommands.put(hcSongCost, hcSongResponse);
-		hcCommands.put(hcMapCost, hcMapResponse);
+		hcResponses.put(hcSongCost, hcSongResponse);
+		hcResponses.put(hcMapCost, hcMapResponse);
 	}
 	
 	public HekiBot() {
@@ -108,13 +108,21 @@ public class HekiBot extends PircBot {
 		
 		
 		////////// hekiCoin commands ///////////
-		if (message.equalsIgnoreCase(hcTestCmd)) {
-			sendMessageAndPrint(channel, hcRemove + sender + " " + hcTestCost);
+		
+		for (int i = 0; i < hcCommands.length; i++) {
+			if (message.equalsIgnoreCase(hcCommands[i])) {
+				sendMessageAndPrint(channel, hcRemove + sender + " " + hcCosts[i]);
+			}
 		}
+		
+		
+		
+		
+		
 		
 		if (message.matches("Removed \\d hekicoins from .*") && sender.equals(hekibot)) {
 			int cost = Integer.parseInt(message.substring(8, 9));
-			sendMessageAndPrint(channel, hcCommands.get(cost));
+			sendMessageAndPrint(channel, hcResponses.get(cost));
 		}
 		
 		////////// Queue commands ///////////
