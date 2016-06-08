@@ -28,10 +28,11 @@ public class HekiBot extends PircBot {
 			"limeman2",
 			"mav3r1ck1989",
 			"riggsy99",
-			"thebstrike"
+			"thebstrike",
+			"mindfartio"
 	};
 	
-	////////// Command strings ///////////
+	////////// Queue command strings ///////////
 	private String queueCmd = "!q";
 	private String oldCmd = "!queue";
 	private String oldQPlusXcmd = "!q\\+";
@@ -45,6 +46,9 @@ public class HekiBot extends PircBot {
 	private String gNightCmd = "!quit";
 	private String lastGameCmd = "!lastgame";
 	private String modNightCmd = "!MODNIGHT";
+	
+	////////// hekiCoins command strings ///////////
+	private String hcTestCmd = "!hctest";
 	
 	////// Misc vars 
 	private ViewerGame currentGame;
@@ -83,6 +87,12 @@ public class HekiBot extends PircBot {
 	@Override 
 	protected void onMessage(String channel, String sender, String login,
 			String hostname, String message) {
+		////////// hekiCoin commands ///////////
+		if (message.equalsIgnoreCase(hcTestCmd)) {
+			sendMessageAndPrint(channel, "!hekicoins remove " + sender + " 1");
+		}
+		
+		////////// Queue commands ///////////
 		
 		if (message.startsWith("!")) {				
 			if ((sender.equals(heki) || sender.equals(lime))) {
