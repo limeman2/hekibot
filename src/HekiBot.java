@@ -12,6 +12,7 @@ public class HekiBot extends PircBot {
 	private Queue q;
 	
 	///// Mods and people
+	private String hekibot = "hekibot";
 	private String heki = "hekimae";
 	private String lime = "limeman2";
 	//private String hekibotName = "hekibot";
@@ -48,7 +49,10 @@ public class HekiBot extends PircBot {
 	private String modNightCmd = "!MODNIGHT";
 	
 	////////// hekiCoins command strings ///////////
+	private String hcRemove = "!hekicoins remove ";
 	private String hcTestCmd = "!hctest";
+	private int hcTestCost = 2;
+	
 	
 	////// Misc vars 
 	private ViewerGame currentGame;
@@ -89,13 +93,17 @@ public class HekiBot extends PircBot {
 			String hostname, String message) {
 		////////// hekiCoin commands ///////////
 		if (message.equalsIgnoreCase(hcTestCmd)) {
-			sendMessageAndPrint(channel, "!hekicoins remove " + sender + " 2");
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-			sendMessageAndPrint(channel, "/me Testelitesteli");
+			sendMessageAndPrint(channel, hcRemove + sender + hcTestCost);
+		}
+		
+		if (message.matches("Removed " + "\\d" + "hekicoins from .*") && sender.equals(hekibot)) {
+			int test = Integer.parseInt(message.substring(8, 8));
+			test += 3;
+			sendMessageAndPrint(channel, "/me Success! " + test);
+		}
+		
+		if (message.matches("Failed to remove currency from .*") && sender.equals(hekibot)) {
+			sendMessageAndPrint(channel, "/me Fail!");
 		}
 		
 		////////// Queue commands ///////////
