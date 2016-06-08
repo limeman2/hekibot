@@ -83,7 +83,7 @@ public class HekiBot extends PircBot {
 		reasonForClosedQueue = UNKNOWN_REASON;
 		q = new Queue();
 		this.queueIsOpen = queueIsOpen;
-		hcResponses.put(-1, hcErrorResponse)
+		hcResponses.put(-1, hcErrorResponse);
 		hcResponses.put(hcSongCost, hcSongResponse);
 		hcResponses.put(hcMapCost, hcMapResponse);
 	}
