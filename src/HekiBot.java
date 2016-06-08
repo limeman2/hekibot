@@ -120,19 +120,21 @@ public class HekiBot extends PircBot {
 		
 		if (message.matches("Removed \\d* hekicoins from .*") && sender.equals(hekibot)) {
 			Scanner scan = new Scanner(message);
+			boolean costSet = false;
 			int cost = -1;
+			String buyer = null;
 			
 			while (scan.hasNext()) {
-				if (scan.hasNextInt()) {
+				if (scan.hasNextInt() && !costSet) {
 					cost = scan.nextInt();
-					break;
+					costSet = true;
 				 }
 				 
-				 scan.next();
+				 buyer = scan.next();
 			}
 			scan.close();
 			
-			sendMessageAndPrint(channel, sender + hcResponses.get(cost));
+			sendMessageAndPrint(channel, buyer + hcResponses.get(cost));
 		}
 		
 		////////// Queue commands ///////////
