@@ -92,8 +92,8 @@ public class HekiBot extends PircBot {
 	private int hc12Cost = 5000;
 	private String hc12Response = " has just bought a 12 HOUR STREAM for 5000 hekicoins! PogChamp ";
 	
-	private String[] hcCommands = { hcSongCmd, hcMapCmd, hcSignCmd, hcSkipCmd, hc1v1Cmd, hcPostCmd, hcSerenadeCmd, hc12Cmd };
-	private int[] hcCosts = { hcSongCost, hcMapCost, hcSignCost, hcSkipCost, hc1v1Cost, hcPostCost, hcSerenadeCost, hc12Cost };
+	private String[] hcCommands = { hcSongCmd, hcNameCmd, hcMapCmd, hcSignCmd, hcSkipCmd, hc1v1Cmd, hcPostCmd, hcSerenadeCmd, hc12Cmd };
+	private int[] hcCosts = { hcSongCost, hcNameCost, hcMapCost, hcSignCost, hcSkipCost, hc1v1Cost, hcPostCost, hcSerenadeCost, hc12Cost };
 	
 	private String hcErrorResponse = "An error has occured. Abort mission!";
 	
@@ -114,6 +114,7 @@ public class HekiBot extends PircBot {
 		this.queueIsOpen = queueIsOpen;
 		hcResponses.put(-1, hcErrorResponse);
 		hcResponses.put(hcSongCost, hcSongResponse);
+		hcResponses.put(hcNameCost, hcNameResponse);
 		hcResponses.put(hcMapCost, hcMapResponse);
 		hcResponses.put(hcSignCost, hcSignResponse);
 		hcResponses.put(hcSkipCost, hcSkipResponse);
