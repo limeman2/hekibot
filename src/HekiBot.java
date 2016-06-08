@@ -17,6 +17,7 @@ public class HekiBot extends PircBot {
 	private String hekibot = "hekibot";
 	private String heki = "hekimae";
 	private String lime = "limeman2";
+	
 	//private String hekibotName = "hekibot";
 	private static String[] MOD_LIST = {
 			"hekimae",
@@ -50,21 +51,46 @@ public class HekiBot extends PircBot {
 	private String lastGameCmd = "!lastgame";
 	private String modNightCmd = "!MODNIGHT";
 	
-	////////// hekiCoins command strings ///////////
+	////////// hekiCoin vars ///////////
 	private String hcRemove = "!hekicoins remove ";
 	
-	HashMap<Integer, String> hcResponses = new HashMap<Integer, String>();
+	private HashMap<Integer, String> hcResponses = new HashMap<Integer, String>();
 	
 	private String hcSongCmd = "!hcsong";
 	private int hcSongCost = 10;
 	private String hcSongResponse = " has just bought a song request for 10 hekicoins!";
 	
+	
 	private String hcMapCmd = "!hcmap";
 	private int hcMapCost = 100;
 	private String hcMapResponse = " has just picked the next map for 100 hekicoins!";
+
+	private String hcSignCmd = "!hcsign";
+	private int hcSignCost = 150;
+	private String hcSignResponse = " has just bought a steam profile sign for 150 hekicoins!";
 	
-	private String[] hcCommands = { hcSongCmd, hcMapCmd };
-	private int[] hcCosts = { hcSongCost, hcMapCost };
+	private String hcSkipCmd = "!hcskip";
+	private int hcSkipCost = 300;
+	private String hcSkipResponse = " has just skipped the queue for 300 hekicoins!";
+	
+	private String hc1v1Cmd = "!hc1v1";
+	private int hc1v1Cost = 500;
+	private String hc1v1Response = " has just challenged heki to a 1v1 for 500 hekicoins!";
+	
+	private String hcPostCmd = "!hcpost";
+	private int hcPostCost = 1000;
+	private String hcPostResponse = " has just bought a personalized postcard for 1000 hekicoins!";
+	
+	private String hcSerenadeCmd = "!hcserenade";
+	private int hcSerenadeCost = 2500;
+	private String hcSerenadeResponse = " has just bought a personal serenade from heki for 2500 hekicoins!";
+	
+	private String hc12Cmd = "!hc12";
+	private int hc12Cost = 5000;
+	private String hc12Response = " has just bought a 12 HOUR STREAM for 5000 hekicoins! PogChamp ";
+	
+	private String[] hcCommands = { hcSongCmd, hcMapCmd, hcSignCmd, hcSkipCmd, hc1v1Cmd, hcPostCmd, hcSerenadeCmd, hc12Cmd };
+	private int[] hcCosts = { hcSongCost, hcMapCost, hcSignCost, hcSkipCost, hc1v1Cost, hcPostCost, hcSerenadeCost, hc12Cost };
 	
 	private String hcErrorResponse = "An error has occured. Abort mission!";
 	
@@ -86,7 +112,13 @@ public class HekiBot extends PircBot {
 		hcResponses.put(-1, hcErrorResponse);
 		hcResponses.put(hcSongCost, hcSongResponse);
 		hcResponses.put(hcMapCost, hcMapResponse);
-	}
+		hcResponses.put(hcSignCost, hcSignResponse);
+		hcResponses.put(hcSkipCost, hcSkipResponse);
+		hcResponses.put(hc1v1Cost, hc1v1Response);
+		hcResponses.put(hcPostCost, hcPostResponse);
+		hcResponses.put(hcSerenadeCost, hcSerenadeResponse);
+		hcResponses.put(hc12Cost, hc12Response);
+	} 
 	
 	public HekiBot() {
 		this(true);
@@ -135,6 +167,10 @@ public class HekiBot extends PircBot {
 			scan.close();
 			
 			sendMessageAndPrint(channel, "/me " + buyer + hcResponses.get(cost));
+		}
+		
+		if (message.matches("Removed \\d* hekicoins from .*") && sender.equals(hekibot)) {
+			
 		}
 		
 		////////// Queue commands ///////////
