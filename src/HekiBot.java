@@ -97,6 +97,7 @@ public class HekiBot extends PircBot {
 		}
 		
 		if (message.matches("Removed \\d hekicoins from .*") && sender.equals(hekibot)) {
+			sendMessageAndPrint(channel, "/me Success!");
 			int test = Integer.parseInt(message.substring(8, 8));
 			test += 3;
 			sendMessageAndPrint(channel, "/me Success! " + test);
