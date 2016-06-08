@@ -116,9 +116,9 @@ public class HekiBot extends PircBot {
 		}
 		
 		if (message.matches("Removed \\d* hekicoins from .*") && sender.equals(hekibot)) {
+			sendMessageAndPrint(channel, "test");
 			Scanner scan = new Scanner(message);
 			int cost = scan.nextInt();
-			sendMessageAndPrint(channel, cost + " test");
 			sendMessageAndPrint(channel, hcResponses.get(cost));
 		}
 		
