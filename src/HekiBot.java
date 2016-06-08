@@ -132,7 +132,7 @@ public class HekiBot extends PircBot {
 			}
 			scan.close();
 			
-			sendMessageAndPrint(channel, hcResponses.get(cost));
+			sendMessageAndPrint(channel, sender + hcResponses.get(cost));
 		}
 		
 		////////// Queue commands ///////////
