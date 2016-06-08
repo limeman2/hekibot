@@ -115,12 +115,7 @@ public class HekiBot extends PircBot {
 			}
 		}
 		
-		
-		
-		
-		
-		
-		if (message.matches("Removed \\d hekicoins from .*") && sender.equals(hekibot)) {
+		if (message.matches("Removed \\d* hekicoins from .*") && sender.equals(hekibot)) {
 			int cost = Integer.parseInt(message.substring(8, 9));
 			sendMessageAndPrint(channel, hcResponses.get(cost));
 		}
