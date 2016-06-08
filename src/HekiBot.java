@@ -90,6 +90,12 @@ public class HekiBot extends PircBot {
 		////////// hekiCoin commands ///////////
 		if (message.equalsIgnoreCase(hcTestCmd)) {
 			sendMessageAndPrint(channel, "!hekicoins remove " + sender + " 1");
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			sendMessageAndPrint(channel, "/me Testelitesteli");
 		}
 		
 		////////// Queue commands ///////////
