@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 import org.jibble.pircbot.PircBot;
@@ -50,9 +52,19 @@ public class HekiBot extends PircBot {
 	
 	////////// hekiCoins command strings ///////////
 	private String hcRemove = "!hekicoins remove ";
+	
+	HashMap<Integer, String> hcCommands = new HashMap<Integer, String>();
+	
 	private String hcTestCmd = "!hctest";
 	private int hcTestCost = 2;
 	
+	private String hcSongCmd = "!hcsong";
+	private int hcSongCost = 10;
+	private String hcSongResponse = " has just bought a song request for 10 hekicoins!";
+	
+	private String hcMapCmd = "!hcmap";
+	private int hcMapCost = 100;
+	private String hcMapResponse = " has just picked the next map for 100 hekicoins!";
 	
 	////// Misc vars 
 	private ViewerGame currentGame;
@@ -69,6 +81,8 @@ public class HekiBot extends PircBot {
 		reasonForClosedQueue = UNKNOWN_REASON;
 		q = new Queue();
 		this.queueIsOpen = queueIsOpen;
+		hcCommands.put(hcSongCost, hcSongResponse);
+		hcCommands.put(hcMapCost, hcMapResponse);
 	}
 	
 	public HekiBot() {
@@ -91,20 +105,16 @@ public class HekiBot extends PircBot {
 	@Override 
 	protected void onMessage(String channel, String sender, String login,
 			String hostname, String message) {
+		
+		
 		////////// hekiCoin commands ///////////
 		if (message.equalsIgnoreCase(hcTestCmd)) {
 			sendMessageAndPrint(channel, hcRemove + sender + " " + hcTestCost);
 		}
 		
 		if (message.matches("Removed \\d hekicoins from .*") && sender.equals(hekibot)) {
-			sendMessageAndPrint(channel, "/me Success!");
-			for (int i = 0; i < message.length(); i++) {
-				sendMessage(channel, i + ": " + message.substring(i, i + 1));
-			}
-		}
-		
-		if (message.matches("Failed to remove currency from .*") && sender.equals(hekibot)) {
-			sendMessageAndPrint(channel, "/me Fail!");
+			int cost = Integer.parseInt(message.substring(8, 9));
+			sendMessageAndPrint(channel, hcCommands.get(cost));
 		}
 		
 		////////// Queue commands ///////////
