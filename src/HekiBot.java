@@ -84,6 +84,10 @@ public class HekiBot extends PircBot {
 	private int hcPostCost = 1000;
 	private String hcPostResponse = " has just bought a personalized postcard for 1000 hekicoins!";
 	
+	private String hcSteamCmd = "!hcsteam";
+	private int hcSteamCost = 1500;
+	private String hcSteamResponse = " has just bought a steam add for 1500 hekicoins!";
+	
 	private String hcSerenadeCmd = "!hcserenade";
 	private int hcSerenadeCost = 2500;
 	private String hcSerenadeResponse = " has just bought a personal serenade from heki for 2500 hekicoins!";
@@ -92,8 +96,8 @@ public class HekiBot extends PircBot {
 	private int hc12Cost = 5000;
 	private String hc12Response = " has just bought a 12 HOUR STREAM for 5000 hekicoins! PogChamp ";
 	
-	private String[] hcCommands = { hcSongCmd, hcNameCmd, hcMapCmd, hcSignCmd, hcSkipCmd, hc1v1Cmd, hcPostCmd, hcSerenadeCmd, hc12Cmd };
-	private int[] hcCosts = { hcSongCost, hcNameCost, hcMapCost, hcSignCost, hcSkipCost, hc1v1Cost, hcPostCost, hcSerenadeCost, hc12Cost };
+	private String[] hcCommands = { hcSongCmd, hcNameCmd, hcMapCmd, hcSignCmd, hcSkipCmd, hc1v1Cmd, hcPostCmd, hcSteamCmd, hcSerenadeCmd, hc12Cmd };
+	private int[] hcCosts = { hcSongCost, hcNameCost, hcMapCost, hcSignCost, hcSkipCost, hc1v1Cost, hcPostCost, hcSteamCost, hcSerenadeCost, hc12Cost };
 	
 	private String hcErrorResponse = "An error has occured. Abort mission!";
 	
@@ -120,6 +124,7 @@ public class HekiBot extends PircBot {
 		hcResponses.put(hcSkipCost, hcSkipResponse);
 		hcResponses.put(hc1v1Cost, hc1v1Response);
 		hcResponses.put(hcPostCost, hcPostResponse);
+		hcResponses.put(hcSteamCost, hcSteamResponse);
 		hcResponses.put(hcSerenadeCost, hcSerenadeResponse);
 		hcResponses.put(hc12Cost, hc12Response);
 	} 
