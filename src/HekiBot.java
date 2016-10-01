@@ -33,7 +33,13 @@ public class HekiBot extends PircBot {
 			"mav3r1ck1989",
 			"riggsy99",
 			"thebstrike",
-			"mindfartio"
+			"mindfartio",
+			"doh0",
+			"alastairch",
+			"crazyheartsz_",
+			"ignorancetv",
+			"rachel_tv",
+			"thatrenguy"
 	};
 	
 	////////// Queue command strings ///////////
@@ -152,7 +158,7 @@ public class HekiBot extends PircBot {
 		
 		
 		////////// hekiCoin commands ///////////
-		
+		/*
 		for (int i = 0; i < hcCommands.length; i++) {
 			if (message.equalsIgnoreCase(hcCommands[i])) {
 				sendMessageAndPrint(channel, hcRemove + sender + " " + hcCosts[i]);
@@ -179,7 +185,7 @@ public class HekiBot extends PircBot {
 			
 			if (costString != null) sendMessageAndPrint(channel, "/me " + buyer + costString);
 		}
-		
+		*/
 		////////// Queue commands ///////////
 		
 		if (message.startsWith("!")) {				
