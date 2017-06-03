@@ -13,6 +13,9 @@ public class HekiBot extends PircBot {
 	////// Queue object
 	private Queue q;
 	
+	////// Loyalty Tracker
+	private LoyaltyTracker loyaltyTracker;
+	
 	///// Mods and people
 	private String hekibot = "hekibot";
 	private String heki = "hekimae";
@@ -122,6 +125,11 @@ public class HekiBot extends PircBot {
 		reasonForClosedQueue = UNKNOWN_REASON;
 		q = new Queue();
 		this.queueIsOpen = queueIsOpen;
+		
+		
+		
+		loyaltyTracker = LoyaltyTracker.getInstance();
+		
 		hcResponses.put(-1, hcErrorResponse);
 		hcResponses.put(hcSongCost, hcSongResponse);
 		hcResponses.put(hcNameCost, hcNameResponse);

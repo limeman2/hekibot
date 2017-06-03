@@ -1,9 +1,12 @@
 import java.io.IOException;
+import java.util.Properties;
 import java.util.Scanner;
 
 import org.jibble.pircbot.IrcException;
+import org.jibble.pircbot.User;
 
 public class BotDriver {
+	public static Properties props;
 	public static String CHANNEL_NAME = "";
 	
 	public static String concatNames(String[] names) {
@@ -20,40 +23,53 @@ public class BotDriver {
 		return sb.toString();
 	}
 	
+	private static HekiBot bot;
+	
+	public static User[] getUsers() {
+		return bot.getUsers(CHANNEL_NAME);
+	}
+	
+	public static void sendMessage(String message) {
+		bot.sendMessage(CHANNEL_NAME, message);
+	}
+	
 	public static void main(String[] args) { 
-		String oAuth = "";
+		props = new GetProperties().getProperties();
 		
-		if (args.length < 2) {
-			BotDriver.CHANNEL_NAME = "#limeman2";
-			oAuth = args[0];
-		} else {
-			BotDriver.CHANNEL_NAME = args[0];
-			oAuth = args[1];
-		}
+		String oAuth = props.getProperty("oAuth");
+		BotDriver.CHANNEL_NAME = props.getProperty("channel-name");
 		
-		String host = "irc.twitch.tv";
+		String host = props.getProperty("irc-host");
 		int port = 6667;
 		
 		System.out.println("Starting up the bot...");
-		HekiBot bot = new HekiBot();
+		bot = new HekiBot();
 		//bot.setVerbose(true);
-		
 		Scanner reader;
 		
 		try {
+			bot.sendRawLine("CAP REQ :twitch.tv/membership");
 			bot.connect(host, port, oAuth);
 			bot.joinChannel(CHANNEL_NAME);
+			
 			bot.sendMessage(CHANNEL_NAME, "HeyGuys ");
 			System.out.println("hekibot is up and running!");
 			System.out.println(bot.toString());
 			
 			while (true) {
 				System.out.println();
+				System.out.print("Hekibot is currently ");
 				if (bot.isPaused()) {
-					System.out.println("HekiBot is currently paused");
+					System.out.print("paused");
 				} else {
-					System.out.println("HekiBot is currently open");
+					System.out.print("open");
 				}
+				System.out.print(" and");
+				if (!LoyaltyTracker.getInstance().isTracking()) {
+					System.out.print(" NOT");
+				}
+				System.out.println(" tracking loyalty.");
+				
 				System.out.println("Main menu");
 				System.out.println("=============");
 				System.out.println();
@@ -61,6 +77,7 @@ public class BotDriver {
 				System.out.println("[M]essage to channel");
 				System.out.println("[E]dit queue/current game");
 				System.out.println("[S]how queue");
+				System.out.println("[S]how [d]atabase");
 				System.out.println("[D]isplay current game");
 				if (bot.isPaused()) {
 					System.out.println("Un[P]ause bot");
@@ -142,6 +159,12 @@ public class BotDriver {
 						break;
 					case "P":
 						bot.togglePause();
+						break;
+					case "B":
+						LoyaltyTracker.getInstance().trackLoyalty(true);
+						break;
+					case "Sd":
+						
 						break;
 					case "CLEAR":
 						System.out.println("Are you absolutely sure?!?!");
