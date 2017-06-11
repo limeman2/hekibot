@@ -3,3 +3,4 @@ Makefile
 /bin/
 *.sh
 .classpath
+/target/

@@ -1,3 +1,5 @@
+package main.java.diet.nutella.hekibot;
+
 import java.io.IOException;
 import java.util.Properties;
 import java.util.Scanner;
@@ -35,6 +37,7 @@ public class BotDriver {
 	
 	public static void main(String[] args) { 
 		props = new GetProperties().getProperties();
+		
 		
 		String oAuth = props.getProperty("oAuth");
 		BotDriver.CHANNEL_NAME = props.getProperty("channel-name");

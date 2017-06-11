@@ -1,3 +1,5 @@
+package main.java.diet.nutella.hekibot;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,14 +13,14 @@ public class GetProperties {
 	public GetProperties() {
 		InputStream inputStream = null;
 		try {
-			String propFileName = "config.properties";
+			String propFileName = "main/resources/config.properties";
  
 			inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
  
 			if (inputStream != null) {
 				props.load(inputStream);
 			} else {
-				throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
+				throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath ");
 			}
  
 			//String channelName = props.getProperty("channel-name");

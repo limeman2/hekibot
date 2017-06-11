@@ -1,3 +1,5 @@
+package main.java.diet.nutella.hekibot;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;

@@ -1,3 +1,5 @@
+package main.java.diet.nutella.hekibot;
+
 import java.util.Timer;
 
 public class LoyaltyTracker {
