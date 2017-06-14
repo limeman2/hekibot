@@ -8,8 +8,6 @@ import java.util.Properties;
 public class GetProperties {
 	private Properties props = new Properties();
 	
-	///////////// Singleton pattern
-	private static GetProperties instance;
 	public GetProperties() {
 		InputStream inputStream = null;
 		try {
@@ -22,8 +20,6 @@ public class GetProperties {
 			} else {
 				throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath ");
 			}
- 
-			//String channelName = props.getProperty("channel-name");
 		} catch (Exception e) {
 			System.out.println("Exception: " + e);
 		} finally {

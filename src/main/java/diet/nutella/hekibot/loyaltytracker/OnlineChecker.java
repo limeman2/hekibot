@@ -1,10 +1,12 @@
-package main.java.diet.nutella.hekibot;
+package main.java.diet.nutella.hekibot.loyaltytracker;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
 import java.util.TimerTask;
+
+import main.java.diet.nutella.hekibot.controller.BotDriver;
 
 public class OnlineChecker extends TimerTask {
 	

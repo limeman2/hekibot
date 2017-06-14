@@ -1,4 +1,4 @@
-package main.java.diet.nutella.hekibot;
+package main.java.diet.nutella.hekibot.viewergame;
 
 import java.util.ArrayList;
 import java.util.Arrays;

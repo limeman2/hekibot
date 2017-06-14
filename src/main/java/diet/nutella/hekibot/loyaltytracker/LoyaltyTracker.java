@@ -1,6 +1,8 @@
-package main.java.diet.nutella.hekibot;
+package main.java.diet.nutella.hekibot.loyaltytracker;
 
 import java.util.Timer;
+
+import main.java.diet.nutella.hekibot.model.UserDAO;
 
 public class LoyaltyTracker {
 	
@@ -17,6 +19,8 @@ public class LoyaltyTracker {
 		this.onlineChecker = new OnlineChecker();
 		this.trackingLoyalty = trackingLoyalty;
 		this.payoutInterval = DEF_PAYOUT_INTERVAL;
+		this.dao = new UserDAO();
+		this.loyaltyUpdater = new LoyaltyUpdater(dao);
 		
 		onlineTimer.scheduleAtFixedRate(onlineChecker, 0, 30 * 1000);  //// Start checking if stream is online
 	};
@@ -36,19 +40,19 @@ public class LoyaltyTracker {
 	private OnlineChecker onlineChecker;	///// Check if stream is online
 	private boolean trackingLoyalty;		///// Whether loyalty should be tracked or not
 	private int payoutInterval;				///// Time interval (in minutes) for coin payouts
+	private LoyaltyUpdater loyaltyUpdater;
+	private UserDAO dao;
 	
 	///////////// Public methods //////////////
 	
 	public void trackLoyalty(boolean track) {
 		if (track && !trackingLoyalty) {
 			loyaltyTimer = new Timer();
-			loyaltyTimer.scheduleAtFixedRate(new LoyaltyUpdater(), 0, 1000 * 60);
+			loyaltyTimer.scheduleAtFixedRate(loyaltyUpdater, 0, 1000 * 60);
 			trackingLoyalty = true;
-			BotDriver.sendMessage("hekibot is now tracking loyalty! SeemsGood ");
 		} else if (!track && trackingLoyalty) {
 			loyaltyTimer.cancel();
 			trackingLoyalty = false;
-			BotDriver.sendMessage("hekibot is no longer tracking loyalty!");
 		}
 	}
 	

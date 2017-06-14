@@ -1,8 +1,11 @@
-package main.java.diet.nutella.hekibot;
+package main.java.diet.nutella.hekibot.viewergame;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
+import main.java.diet.nutella.hekibot.HekiBot;
+import main.java.diet.nutella.hekibot.controller.BotDriver;
 
 public class ViewerGame {
 	private boolean done;
@@ -32,6 +35,9 @@ public class ViewerGame {
 			
 			Scanner reader = new Scanner(System.in);
 			String input = reader.nextLine();
+			
+			
+			/*
 			switch(input) {
 				case "L":
 					startGame();
@@ -44,7 +50,7 @@ public class ViewerGame {
 				case "R":
 					removePlayer();
 					break;
-			}
+			}*/
 			
 		}
 	}
@@ -67,6 +73,7 @@ public class ViewerGame {
 			System.out.println("[C]ustom selection of entries");
 			String input = reader.nextLine();
 			
+			/*
 			switch (input) {
 				case "F":
 					System.out.println("How many players?");
@@ -74,7 +81,7 @@ public class ViewerGame {
 					int numberOfPlayers = reader.nextInt();
 					String[] players = bot.pickFromQueue(numberOfPlayers);
 					
-					bot.sendMessage(BotDriver.CHANNEL_NAME, BotDriver.concatNames(players) + " has been selected for a game! Let's roll PogChamp");
+					//bot.sendMessage(BotDriver.CHANNEL_NAME, BotDriver.concatNames(players) + " has been selected for a game! Let's roll PogChamp");
 					for(String s : players) stagingArea.add(s);
 					bot.newViewerGame(this);
 					break;
@@ -86,7 +93,7 @@ public class ViewerGame {
 					System.out.println("Invalid input!");
 					invalidInput = true;
 					break;
-			}
+			} */
 		} while (invalidInput);
 	}
 	

@@ -1,13 +1,29 @@
 package main.java.diet.nutella.hekibot;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
 
-import org.jibble.pircbot.PircBot;
 
-public class HekiBot extends PircBot {
+
+import main.java.diet.nutella.hekibot.loyaltytracker.LoyaltyTracker;
+import main.java.diet.nutella.hekibot.viewergame.Queue;
+import main.java.diet.nutella.hekibot.viewergame.ViewerGame;
+
+public class HekiBot  {
+	
+	////// Singleton pattern
+	private static HekiBot instance;
+	private HekiBot() {
+		//this.setName("hekibot");
+		loyaltyTracker = LoyaltyTracker.getInstance();
+	};
+	
+	static {
+		instance = new HekiBot();	////// initialize singleton instance with default of 'false'
+	}
+	
+	public static HekiBot getInstance() {
+		return instance;
+	}
 	
 	////// Database file
 	
@@ -24,28 +40,7 @@ public class HekiBot extends PircBot {
 	private String lime = "limeman2";
 	
 	//private String hekibotName = "hekibot";
-	private static String[] MOD_LIST = {
-			"hekimae",
-			"7updiet",
-			"bx3waage",
-			"aske347",
-			"bengt53",
-			"centane",
-			"chloelock",
-			"henryjiii",
-			"khiiess",
-			"limeman2",
-			"mav3r1ck1989",
-			"riggsy99",
-			"thebstrike",
-			"mindfartio",
-			"doh0",
-			"alastairch",
-			"crazyheartsz_",
-			"ignorancetv",
-			"rachel_tv",
-			"thatrenguy"
-	};
+	
 	
 	////////// Queue command strings ///////////
 	private String queueCmd = "!q";
@@ -122,6 +117,7 @@ public class HekiBot extends PircBot {
 	//private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 	//private Calendar rightNow = Calendar.getInstance();
 	
+	/*
 	public HekiBot(boolean queueIsOpen) {
 		this.setName("hekibot");
 		reasonForClosedQueue = UNKNOWN_REASON;
@@ -144,27 +140,13 @@ public class HekiBot extends PircBot {
 		hcResponses.put(hcSerenadeCost, hcSerenadeResponse);
 		hcResponses.put(hc12Cost, hc12Response);
 	} 
+	*/
 	
-	public HekiBot() {
-		this(true);
-	}
-	
-	@Override
-	protected void onDisconnect() {
-		System.out.println("Disconnected. Trying to reconnect...");
-		System.out.println(q.queueList());
-		try {
-			this.reconnect();
-			this.joinChannel("#hekimae");
-			this.sendMessageAndPrint("#hekimae", "I just disconnected, but now I'm back.");
-		} catch (Exception e) {
-			System.out.println(e.getMessage());
-		}
-	}
 
 	@Override 
 	protected void onMessage(String channel, String sender, String login,
 			String hostname, String message) {
+
 		
 		
 		////////// hekiCoin commands ///////////
@@ -195,7 +177,7 @@ public class HekiBot extends PircBot {
 			
 			if (costString != null) sendMessageAndPrint(channel, "/me " + buyer + costString);
 		}
-		*/
+		
 		////////// Queue commands ///////////
 		
 		if (message.startsWith("!")) {				
@@ -317,10 +299,12 @@ public class HekiBot extends PircBot {
 				sendMessageAndPrint(channel, "Available commands: !q, !q+[name], !q+[name1]+[name2], !qlist (mods only), !qpos, !leaveq");
 			}
 		}
+	*/
 	} 
 	
 	///////// Below: functions to be used by me in the console window
 	
+
 	public String addToQueue(String[] players) {
 		return q.addEntry(players);
 	}
@@ -352,26 +336,8 @@ public class HekiBot extends PircBot {
 	public void togglePause() {
 		queueIsOpen = !queueIsOpen;
 	}
+
 	
-	public void shutDown() {
-		sendMessageAndPrint(BotDriver.CHANNEL_NAME, "G'NIGHT ResidentSleeper");
-		try {
-			Thread.sleep(500);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} finally {
-			this.dispose();
-		}
-	}
-	
-	public void sendQueueList() {
-		sendMessage(BotDriver.CHANNEL_NAME, "The queue: " + q.queueList());
-	}
-	
-	public void clearQueue() {
-		sendMessage(BotDriver.CHANNEL_NAME, "The queue has been cleared!");
-		q.clearQueue();
-	}
 	
 	public void printCurrentGame() {
 		if (currentGame == null) {
@@ -381,16 +347,4 @@ public class HekiBot extends PircBot {
 		}
 	}
 	
-	private void sendMessageAndPrint(String channel, String message) {
-		//showChatMessage("hekibot", message);
-		sendMessage(channel, message);
-	}
-	
-	private boolean isOp(String sender) {
-		for (String name : MOD_LIST) {
-			if (name.equals(sender))
-				return true;
-		}
-		return false;
-	}
 }
