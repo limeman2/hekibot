@@ -72,7 +72,6 @@ public class TwitchConnector implements Callable {
 						e.printStackTrace();
 					}
 				}
-				
 			} catch (NumberFormatException e) {
 				e.printStackTrace();
 			} 

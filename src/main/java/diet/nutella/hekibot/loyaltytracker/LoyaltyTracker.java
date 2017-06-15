@@ -2,13 +2,14 @@ package main.java.diet.nutella.hekibot.loyaltytracker;
 
 import java.util.Timer;
 
+import main.java.diet.nutella.hekibot.model.SimpleTwitchUser;
 import main.java.diet.nutella.hekibot.model.UserDAO;
 
 public class LoyaltyTracker {
 	
 	///////////// Static, final variables /////////
 	
-	public static final int DEF_PAYOUT_INTERVAL = 5;
+	public static final int DEF_PAYOUT_INTERVAL = 1000 * 5;
 	
 	///////////// Singleton pattern ///////////////
 	
@@ -20,9 +21,10 @@ public class LoyaltyTracker {
 		this.trackingLoyalty = trackingLoyalty;
 		this.payoutInterval = DEF_PAYOUT_INTERVAL;
 		this.dao = new UserDAO();
-		this.loyaltyUpdater = new LoyaltyUpdater(dao);
+		this.currentUsers = new CurrentUsersTracker(dao);
 		
-		onlineTimer.scheduleAtFixedRate(onlineChecker, 0, 30 * 1000);  //// Start checking if stream is online
+		this.loyaltyUpdater = new LoyaltyUpdater(dao, currentUsers);
+		onlineTimer.scheduleAtFixedRate(onlineChecker, 0, DEF_PAYOUT_INTERVAL / 2);  //// Start checking if stream is online
 	};
 	
 	static {
@@ -42,13 +44,14 @@ public class LoyaltyTracker {
 	private int payoutInterval;				///// Time interval (in minutes) for coin payouts
 	private LoyaltyUpdater loyaltyUpdater;
 	private UserDAO dao;
+	private CurrentUsersTracker currentUsers;
 	
 	///////////// Public methods //////////////
 	
 	public void trackLoyalty(boolean track) {
 		if (track && !trackingLoyalty) {
 			loyaltyTimer = new Timer();
-			loyaltyTimer.scheduleAtFixedRate(loyaltyUpdater, 0, 1000 * 60);
+			loyaltyTimer.scheduleAtFixedRate(loyaltyUpdater, 0, DEF_PAYOUT_INTERVAL);
 			trackingLoyalty = true;
 		} else if (!track && trackingLoyalty) {
 			loyaltyTimer.cancel();
@@ -56,7 +59,21 @@ public class LoyaltyTracker {
 		}
 	}
 	
+	public void printUsers() {
+		for (SimpleTwitchUser user : currentUsers.getUsers()) {
+			System.out.println(user);
+		}
+		System.out.println();
+	}
+	
 	public boolean isTracking() {
 		return trackingLoyalty;
+	}
+
+	public void forceTrack() {
+		onlineTimer.cancel();
+		trackingLoyalty = true;
+		loyaltyTimer = new Timer();
+		loyaltyTimer.scheduleAtFixedRate(loyaltyUpdater, 3000, DEF_PAYOUT_INTERVAL);
 	}
 }
