@@ -27,8 +27,11 @@ public class HekiBotUI {
 	
 	private final MenuEntry disconnectEntry;
 	
+	private final MenuEntry showUsersEntry;
+	
 	private final MenuEntry quitEntry;
 	
+	private final MenuEntry forceTrackEntry;
 	
 	//private final MenuEntry STOP_TRACKING_ENTRY = new MenuEntry("S", "Stop tracking");
 	//private final MenuEntry QUIT_ENTRY = new MenuEntry("Q", "Quit");
@@ -50,6 +53,19 @@ public class HekiBotUI {
 		disconnectEntry = new MenuEntry("D", "Disconnect from Twitch", 
 				new TwitchConnector(bot, false));
 		
+		showUsersEntry = new MenuEntry("S", "Show users in channel", new Callable() {
+				public void call() {
+					LoyaltyTracker.getInstance().printUsers();
+				}
+			}
+		);
+		
+		forceTrackEntry = new MenuEntry("F", "Force tracking DEV ONLY", new Callable() {
+			public void call() {
+				LoyaltyTracker.getInstance().forceTrack();
+			}
+		});
+		
 		quitEntry = new MenuEntry("TQ", "Terminate and quit", new Callable() {
 			public void call() {
 				OutputIRC irc = new OutputIRC(bot);
@@ -65,6 +81,8 @@ public class HekiBotUI {
 		});
 		
 		mainMenuEntries.add(quitEntry);
+		mainMenuEntries.add(showUsersEntry);
+		mainMenuEntries.add(forceTrackEntry);
 		
 		inputReader = new Scanner(System.in);
 		
