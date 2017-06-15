@@ -1,14 +1,24 @@
 package main.java.diet.nutella.hekibot.model;
 
-public class User {
+public class UserInDB {
+	private int id;
 	private String name;
 	private int coins;
 	private int time;
 	
-	public User(String name, int coins, int time) {
+	public UserInDB(int id, String name, int coins, int time) {
+		this.id = id;
 		this.name = name;
 		this.coins = coins;
 		this.time = time;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public String getName() {
@@ -33,5 +43,9 @@ public class User {
 
 	public void setTime(int time) {
 		this.time = time;
+	}
+	
+	public String toString() {
+		return "Name: " + name + ", coins: " + coins + ", minutes watched: " + time;
 	}
 }
