@@ -77,8 +77,6 @@ public class Menu {
 			res.executeAction();
 		} else {
 			throw new InputOnEmptyMenuException();
-		}
-		
-		
+		}	
 	}
 }

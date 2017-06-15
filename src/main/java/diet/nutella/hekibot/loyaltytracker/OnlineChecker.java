@@ -10,11 +10,9 @@ import main.java.diet.nutella.hekibot.controller.BotDriver;
 
 public class OnlineChecker extends TimerTask {
 	
-
 	@Override
 	public void run() {
 		try {
-			
 			////////// Connect to twitch API to check whether channel is online
 			
 			URL url = new URL("https://api.twitch.tv/kraken/streams/" + BotDriver.props.getProperty("heki-id"));
