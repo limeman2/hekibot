@@ -6,9 +6,13 @@ import java.util.Properties;
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
 import org.pircbotx.cap.EnableCapHandler;
-
+import org.pircbotx.hooks.ListenerAdapter;
+import org.pircbotx.hooks.events.DisconnectEvent;
+import org.pircbotx.hooks.events.JoinEvent;
+import org.pircbotx.output.OutputIRC;
 
 import main.java.diet.nutella.hekibot.GetProperties;
+import main.java.diet.nutella.hekibot.loyaltytracker.LoyaltyTracker;
 
 public class BotDriver {
 	public static Properties props;
@@ -20,7 +24,6 @@ public class BotDriver {
 			"alastairch",
 			"aske347",
 			"bx3waage",
-			
 			"bengt53",
 			"centane",
 			"chloelock",
@@ -32,7 +35,6 @@ public class BotDriver {
 			"thebstrike",
 			"mindfartio",
 			"doh0",
-			
 			"crazyheartsz_",
 			"ignorancetv",
 			"rachel_tv",
@@ -42,9 +44,9 @@ public class BotDriver {
 	private static PircBotX hekiBot;
 	private static HekiBotUI ui;
 	
-	public static String concatNames(String[] names) {
+	public static String concatNames(Object[] names) {
 		StringBuilder sb = new StringBuilder();
-		if (names.length == 1) return names[0];
+		if (names.length == 1) return names[0].toString();
 		
 		for (int i = 0; i < names.length - 1; i++) {
 			sb.append(names[i]);
@@ -59,7 +61,6 @@ public class BotDriver {
 	
 	
 	public static void main(String[] args) { 
-		
 		//// Set up Properties to be used widely in the project
 		props = new GetProperties().getProperties();
 
@@ -76,11 +77,34 @@ public class BotDriver {
 				.setName("hekibot")
 				.setServerPassword(props.getProperty("oAuth"))
 				.addListener(new MessageListener())
+				.addListener(new ListenerAdapter() {
+					///// Simple listener to make sure we notify
+					///// users in the channel that we've joined
+					@Override
+					public void onJoin(JoinEvent event) throws Exception {
+						if (event.getUser().getNick().equals("hekibot")) {
+							new OutputIRC(event.getBot())
+								.message(BotDriver.CHANNEL_NAME, "I just disconnected, but now I'm back! :--) ");
+						}
+					}
+					
+				})
+				.addListener(new ListenerAdapter() {
+					///// Simple listener to reconnect if we disconnect for 
+					///// whatever reason
+					@Override
+					public void onDisconnect(DisconnectEvent event) throws Exception {
+						event.getBot().startBot();
+					}	
+				})
 				.addAutoJoinChannel(CHANNEL_NAME)
 				.buildConfiguration();
-				
+		
+		///// Get instance of LoyaltyTracker
+		LoyaltyTracker.getInstance();
+
 		hekiBot = new PircBotX(config);		
 		
-		ui = new HekiBotUI(hekiBot);
+		ui = new HekiBotUI(hekiBot); 
 	}
 }
