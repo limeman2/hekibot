@@ -29,6 +29,8 @@ public class HekiBotUI {
 	
 	private final MenuEntry showUsersEntry;
 	
+	private final MenuEntry importPointsEntry;
+	
 	private final MenuEntry quitEntry;
 	
 	private final MenuEntry forceTrackEntry;
@@ -66,6 +68,8 @@ public class HekiBotUI {
 			}
 		});
 		
+		importPointsEntry = new MenuEntry("I", "Import points from csv", new DataImporter());
+		
 		quitEntry = new MenuEntry("TQ", "Terminate and quit", new Callable() {
 			public void call() {
 				OutputIRC irc = new OutputIRC(bot);
@@ -83,6 +87,7 @@ public class HekiBotUI {
 		mainMenuEntries.add(quitEntry);
 		mainMenuEntries.add(showUsersEntry);
 		mainMenuEntries.add(forceTrackEntry);
+		mainMenuEntries.add(importPointsEntry);
 		
 		inputReader = new Scanner(System.in);
 		
