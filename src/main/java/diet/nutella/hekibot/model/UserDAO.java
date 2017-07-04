@@ -24,6 +24,15 @@ import main.java.diet.nutella.hekibot.controller.BotDriver;
 
 public class UserDAO {
 	
+	private static final String UPDATE_FULL_USER_STATEMENT =
+			"INSERT INTO users "
+			+ "(id, name, coins, time) "
+			+ "VALUES (?, ?, ?, ?) "
+			+ "ON DUPLICATE KEY UPDATE "
+			+ "name = ?, "
+			+ "coins = ?, "
+			+ "time = ?;";
+	
 	private static final String UPDATE_STATEMENT = 
 			"INSERT INTO users "
 			+ "(id, name, coins, time) "
@@ -75,6 +84,26 @@ public class UserDAO {
 			stmt.setInt(1, amount);
 			stmt.setString(2, name);
 
+			stmt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void updateUser(UserInDB user) {
+		PreparedStatement stmt = null;
+		
+		try {
+			stmt = conn.prepareStatement(UPDATE_FULL_USER_STATEMENT);
+			stmt.setInt(1, user.getId());
+			stmt.setString(2, user.getName());
+			stmt.setInt(3, user.getCoins());
+			stmt.setInt(4, user.getTime());
+
+			stmt.setString(5, user.getName());
+			stmt.setInt(6, user.getCoins());
+			stmt.setInt(7, user.getTime());
+			
 			stmt.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();

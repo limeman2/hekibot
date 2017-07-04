@@ -25,6 +25,12 @@ public class TwitchIdAPIRequester implements Callable<SimpleTwitchUser[]> {
 		this.userNames = userNames;
 		this.result = new ArrayList<SimpleTwitchUser>();
 	}
+	
+	public TwitchIdAPIRequester(String userName) {
+		this.userNames = new ArrayList<String>();
+		this.userNames.add(userName);
+		this.result = new ArrayList<SimpleTwitchUser>();
+	}
 
 	public SimpleTwitchUser[] call() {
 		StringBuilder sb = new StringBuilder(USER_LOOKUP_URL);

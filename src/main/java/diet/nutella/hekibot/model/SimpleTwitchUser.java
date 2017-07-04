@@ -24,6 +24,11 @@ public class SimpleTwitchUser {
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
+	
+	@Override
+	public boolean equals(SimpleTwitchUser user) {
+		return this.id == user.getId() && this.userName.equals(user.getUserName());
+	}
 
 	@Override
 	public String toString() {
