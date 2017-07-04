@@ -1,10 +1,15 @@
 package main.java.diet.nutella.hekibot.controller;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.types.GenericMessageEvent;
 
+import main.java.diet.nutella.hekibot.model.Gamble;
+import main.java.diet.nutella.hekibot.model.GambleTracker;
+import main.java.diet.nutella.hekibot.model.SimpleTwitchUser;
+import main.java.diet.nutella.hekibot.model.TwitchIdAPIRequester;
 import main.java.diet.nutella.hekibot.model.UserDAO;
 import main.java.diet.nutella.hekibot.model.UserInDB;
 
@@ -13,10 +18,13 @@ public class MessageListener extends ListenerAdapter {
 	private static final String TOP_10_COMMAND = "!top10";
 	private static final String HOF_COMMAND = "!hof";
 	private static final String REWARD_COMMAND = "!reward";
+	private static final String GAMBLE_COMMAND = "!gamble";
 	private UserDAO dao;
+	private GambleTracker tracker;
 	
 	public MessageListener() {
 		dao = new UserDAO();
+		tracker = new GambleTracker();
 	}
 
 	@Override
@@ -76,17 +84,54 @@ public class MessageListener extends ListenerAdapter {
 		/// Reward command
 		/// Syntax: !reward [user] [amount]
 		/// Rewards user [user] with [amount] amount of hekicoins
-		if (event.getMessage().matches(REWARD_COMMAND+" .*") && 
-				event.getUser().getNick().equalsIgnoreCase("limeman2")) {
-			Scanner scan = new Scanner(event.getMessage());
-			scan.useDelimiter(" ");
-			scan.next();
-			String recipient = scan.next();
-			int amount = scan.nextInt();
+		if (event.getMessage().matches(REWARD_COMMAND + " .*")) {
+			if (event.getUser().getNick().equalsIgnoreCase("limeman2") ||
+					event.getUser().getNick().equalsIgnoreCase("hekimae")) {
+				Scanner scan = new Scanner(event.getMessage());
+				scan.useDelimiter(" ");
+				scan.next();
+				String recipient = scan.next();
+				int amount = scan.nextInt();
+				
+				dao.addCoinsToUser(recipient, amount);
+				event.respondWith(recipient + " has just received " + amount + " hekicoins PogChamp ");
+				scan.close();
+			}
 			
-			dao.addCoinsToUser(recipient, amount);
-			event.respondWith(recipient + " has just received " + amount + " hekicoins PogChamp ");
-			scan.close();
+			
+			
+		}
+		
+		/// Gamble command
+		/// Syntax: !gamble [amount]
+		/// If you have coins > [amount], gamble [amount] amount of coins
+		/// Has a 3 minute cooldown
+		if (event.getMessage().matches(GAMBLE_COMMAND + " .*")) {
+			try {
+				Scanner scan = new Scanner(event.getMessage());
+				scan.useDelimiter(" ");
+				scan.next();
+				int amount = scan.nextInt();
+				
+				SimpleTwitchUser user = 
+						new TwitchIdAPIRequester(event.getUser().getNick()).call()[0];
+				
+				Gamble storedGamble = tracker.getGamble(user);
+				
+				if (storedGamble == null) {
+					Gamble gamble = new Gamble(user, dao);
+					tracker.addGamble(gamble);
+					
+					event.respondWith(gamble.execute(amount));
+				} else {
+					event.respondWith(storedGamble.execute(amount));
+				}
+				
+				scan.close();
+			} catch (InputMismatchException ex) {
+				ex.printStackTrace();
+			}
+			
 		}
 	}
 	
