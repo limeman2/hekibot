@@ -46,16 +46,16 @@ public class UserDAO {
 			"UPDATE users SET coins = coins + ? WHERE name = ?";
 	
 	private static final String GET_USER_BY_NAME_STATEMENT = 
-			"SELECT * FROM users WHERE name=?";
+			"SELECT id, name, coins, time FROM users WHERE name=?";
 	
 	private static final String GET_USER_BY_ID_STATEMENT =
-			"SELECT * FROM users WHERE id=?";
+			"SELECT id, name, coins, time FROM users WHERE id=?";
 	
 	private static final String GET_TOP_USERS_STATEMENT =
-			"SELECT * FROM users ORDER BY coins DESC LIMIT ?";
+			"SELECT id, name, coins, time FROM users ORDER BY coins DESC LIMIT ?";
 	
 	private static final String GET_TOP_USERS_BY_TIME_STATEMENT =
-			"SELECT * FROM users ORDER BY time DESC LIMIT ?";
+			"SELECT id, name, coins, time FROM users ORDER BY time DESC LIMIT ?";
 	
 	private static final String USER_REQUEST_URL = String.format(
 			"https://tmi.twitch.tv/group/user/%s/chatters", 
