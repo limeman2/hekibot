@@ -46,8 +46,4 @@ public class CurrentUsersTracker {
 			this.users.addAll(Arrays.asList(array));
 		}
 	}
-	
-	
-	
-	
 }

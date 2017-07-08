@@ -1,7 +1,10 @@
-package main.java.diet.nutella.hekibot.model;
+package main.java.diet.nutella.hekibot.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import main.java.diet.nutella.hekibot.model.Gamble;
+import main.java.diet.nutella.hekibot.model.SimpleTwitchUser;
 
 public class GambleTracker {
 	private List<Gamble> gambles;

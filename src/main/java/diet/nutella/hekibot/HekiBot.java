@@ -142,8 +142,6 @@ public class HekiBot  {
 	} 
 	*/
 	
-
-	@Override 
 	protected void onMessage(String channel, String sender, String login,
 			String hostname, String message) {
 

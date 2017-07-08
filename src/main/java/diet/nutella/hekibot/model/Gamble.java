@@ -19,7 +19,6 @@ public class Gamble {
 	
 	public String execute(int amount) {
 		long timeSinceLastGamble = System.currentTimeMillis() - lastGamble;
-		System.out.println(timeSinceLastGamble);
 		UserInDB tempUser = dao.getUserFromDatabase(user.getId());
 		if (amount > tempUser.getCoins()) {
 			return tempUser.getName()

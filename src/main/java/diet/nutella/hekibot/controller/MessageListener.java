@@ -7,7 +7,6 @@ import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.types.GenericMessageEvent;
 
 import main.java.diet.nutella.hekibot.model.Gamble;
-import main.java.diet.nutella.hekibot.model.GambleTracker;
 import main.java.diet.nutella.hekibot.model.SimpleTwitchUser;
 import main.java.diet.nutella.hekibot.model.TwitchIdAPIRequester;
 import main.java.diet.nutella.hekibot.model.UserDAO;

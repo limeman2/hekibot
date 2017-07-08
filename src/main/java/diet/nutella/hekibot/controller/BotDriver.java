@@ -102,7 +102,7 @@ public class BotDriver {
 		
 		///// Get instance of LoyaltyTracker
 		LoyaltyTracker.getInstance();
-
+		
 		hekiBot = new PircBotX(config);		
 		
 		ui = new HekiBotUI(hekiBot); 
