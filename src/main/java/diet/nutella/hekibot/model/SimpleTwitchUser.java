@@ -25,7 +25,6 @@ public class SimpleTwitchUser {
 		this.userName = userName;
 	}
 	
-	@Override
 	public boolean equals(SimpleTwitchUser user) {
 		return this.id == user.getId() && this.userName.equals(user.getUserName());
 	}
