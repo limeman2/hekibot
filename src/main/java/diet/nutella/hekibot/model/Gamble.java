@@ -20,9 +20,11 @@ public class Gamble {
 	public String execute(int amount) {
 		long timeSinceLastGamble = System.currentTimeMillis() - lastGamble;
 		UserInDB tempUser = dao.getUserFromDatabase(user.getId());
-		if (amount > tempUser.getCoins()) {
+		if (amount > tempUser.getCoins() || amount < 1) {
 			return tempUser.getName()
-					+ ": You don't have enough coins to do that.";
+					+ ((amount >= 1) ? ": You don't have enough coins to do that." 
+							: ": You can't gamble less than 1 hekicoin.");
+		
 		} else {
 			if (timeSinceLastGamble < COOLDOWN) {
 				return tempUser.getName() 
