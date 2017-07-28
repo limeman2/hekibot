@@ -1,5 +1,7 @@
 package main.java.diet.nutella.hekibot.loyaltytracker;
 
+import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,9 +39,10 @@ public class CurrentUsersTracker {
 		SimpleTwitchUser[] array = null;
 		try {
 			array = dao.getUsersInChannel();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (SocketTimeoutException ste) {
+			System.out.println("Connection to Twitch API to get users in channel has timed out. API down?");
+		} catch (IOException ioex) {
+			ioex.printStackTrace();
 		}
 		users.clear();
 		if (array != null) {
