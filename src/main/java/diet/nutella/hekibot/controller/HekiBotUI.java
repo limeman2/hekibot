@@ -64,7 +64,7 @@ public class HekiBotUI {
 		
 		forceTrackEntry = new MenuEntry("F", "Force tracking DEV ONLY", new Callable() {
 			public void call() {
-				LoyaltyTracker.getInstance().forceTrack();
+				
 			}
 		});
 		

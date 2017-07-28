@@ -2,6 +2,7 @@ package main.java.diet.nutella.hekibot.loyaltytracker;
 
 import java.util.Timer;
 
+import main.java.diet.nutella.hekibot.controller.OnlineChecker;
 import main.java.diet.nutella.hekibot.model.SimpleTwitchUser;
 import main.java.diet.nutella.hekibot.model.UserDAO;
 
@@ -17,16 +18,14 @@ public class LoyaltyTracker {
 	private LoyaltyTracker(boolean trackingLoyalty) {
 		
 		////// Initialize instance variables ///////
-		this.onlineTimer = new Timer();
-		this.onlineChecker = new OnlineChecker();
+		
+		
 		this.trackingLoyalty = trackingLoyalty;
 		this.payoutInterval = DEF_PAYOUT_INTERVAL;
 		this.dao = new UserDAO();
 		this.currentUsers = new CurrentUsersTracker(dao);
 		
 		this.loyaltyUpdater = new LoyaltyUpdater(dao, currentUsers);
-		onlineTimer.scheduleAtFixedRate(onlineChecker, 0, DEF_PAYOUT_INTERVAL / 2);  //// Start checking if stream is online
-		
 	};
 	
 	static {
@@ -39,14 +38,14 @@ public class LoyaltyTracker {
 	
 	///////////// Fields //////////////////////
 	
-	private Timer onlineTimer;				///// Timer object which checks whether stream is online
 	private Timer loyaltyTimer;				///// Timer object which tracks loyalty
-	private OnlineChecker onlineChecker;	///// Check if stream is online
 	private boolean trackingLoyalty;		///// Whether loyalty should be tracked or not
+	private boolean streamOnline;			///// Whether stream is online
 	private int payoutInterval;				///// Time interval (in minutes) for coin payouts
 	private LoyaltyUpdater loyaltyUpdater;
 	private UserDAO dao;
 	private CurrentUsersTracker currentUsers;
+	
 	
 	///////////// Public methods //////////////
 	
@@ -72,10 +71,15 @@ public class LoyaltyTracker {
 		return trackingLoyalty;
 	}
 
-	public void forceTrack() {
-		onlineTimer.cancel();
-		trackingLoyalty = true;
-		loyaltyTimer = new Timer();
-		loyaltyTimer.scheduleAtFixedRate(loyaltyUpdater, 3000, DEF_PAYOUT_INTERVAL);
+	public boolean isStreamOnline() {
+		return streamOnline;
+	}
+
+	public void setStreamOnline(boolean streamOnline) {
+		this.streamOnline = streamOnline;
+	}
+	
+	public UserDAO getDAO() {
+		return this.dao;
 	}
 }

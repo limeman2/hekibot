@@ -1,4 +1,4 @@
-package main.java.diet.nutella.hekibot.loyaltytracker;
+package main.java.diet.nutella.hekibot.controller;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -6,10 +6,16 @@ import java.net.URL;
 import java.util.Scanner;
 import java.util.TimerTask;
 
-import main.java.diet.nutella.hekibot.controller.BotDriver;
+import main.java.diet.nutella.hekibot.loyaltytracker.LoyaltyTracker;
+import main.java.diet.nutella.hekibot.model.UserDAO;
 
 public class OnlineChecker extends TimerTask {
+	private UserDAO userDAO;
 	
+	public OnlineChecker(UserDAO userDAO) {
+		this.userDAO = userDAO;
+	}
+
 	@Override
 	public void run() {
 		try {
@@ -28,13 +34,16 @@ public class OnlineChecker extends TimerTask {
 			/////////// Check if stream is online
 			
 			boolean streamOnline = !scan.next().equals("{\"stream\":null}");
+			LoyaltyTracker.getInstance().setStreamOnline(streamOnline);
 			
 			boolean isTracking = LoyaltyTracker.getInstance().isTracking();
 			
 			if (streamOnline && !isTracking) {
 				LoyaltyTracker.getInstance().trackLoyalty(true); 	//// Start tracking loyalty
+				userDAO.connect();
 			} else if (!streamOnline && isTracking) {
 				LoyaltyTracker.getInstance().trackLoyalty(false);	//// Stop tracking loyalty
+				userDAO.disconnect();
 			}
 			
 			scan.close();

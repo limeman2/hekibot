@@ -2,6 +2,7 @@ package main.java.diet.nutella.hekibot.controller;
 
 
 import java.util.Properties;
+import java.util.Timer;
 
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
@@ -103,7 +104,12 @@ public class BotDriver {
 		///// Get instance of LoyaltyTracker
 		LoyaltyTracker.getInstance();
 		
+		OnlineChecker onlineChecker = new OnlineChecker(LoyaltyTracker.getInstance().getDAO());
+		
 		hekiBot = new PircBotX(config);		
+		
+		Timer onlineTimer = new Timer();
+		onlineTimer.scheduleAtFixedRate(onlineChecker, 0, LoyaltyTracker.DEF_PAYOUT_INTERVAL / 2);
 		
 		ui = new HekiBotUI(hekiBot); 
 	}

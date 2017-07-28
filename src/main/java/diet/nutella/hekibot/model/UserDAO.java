@@ -1,5 +1,6 @@
 package main.java.diet.nutella.hekibot.model;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -10,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -19,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import main.java.diet.nutella.hekibot.controller.BotDriver;
 
@@ -64,15 +67,41 @@ public class UserDAO {
 	
 	private Connection conn;
 	
+	private boolean isConnected;
+	
 	public UserDAO() {
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection(
-					BotDriver.props.getProperty("db-URL"),
-					BotDriver.props.getProperty("db-username"), 
-					BotDriver.props.getProperty("db-password"));
-		} catch (ClassNotFoundException | SQLException e) {
-			e.printStackTrace();
+		this.isConnected = false;
+		connect();
+	}
+	
+	public void connect() {
+		if(!isConnected) {
+			try {
+				Class.forName("com.mysql.jdbc.Driver");
+				conn = DriverManager.getConnection(
+						BotDriver.props.getProperty("db-URL"),
+						BotDriver.props.getProperty("db-username"), 
+						BotDriver.props.getProperty("db-password"));
+				this.isConnected = true;
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace(); 
+			} catch (SQLException e) {
+				System.out.println("EXCEPTION on " + new Date());
+				e.printStackTrace();
+				this.isConnected = false;
+			}
+		}
+	}
+	
+	public void disconnect() {
+		if(isConnected) {
+			try {
+				conn.close();
+				this.isConnected = false;
+			} catch (SQLException e) {
+				System.out.println("EXCEPTION on " + new Date());
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -230,7 +259,7 @@ public class UserDAO {
 		return null;
 	}
 	
-	public SimpleTwitchUser[] getUsersInChannel() throws Exception {
+	public SimpleTwitchUser[] getUsersInChannel() throws IOException {
 		JSONParser jp = new JSONParser();
 			
 		/////// Get usernames in channel
@@ -244,26 +273,33 @@ public class UserDAO {
 		
 		///////// Parse JSON data into different user types
 		
-		JSONObject obj = (JSONObject) jp.parse(new InputStreamReader((InputStream) request.getContent()));
-		JSONArray staff = (JSONArray) ((JSONObject)obj.get("chatters")).get("staff");
-		JSONArray viewers = (JSONArray) ((JSONObject)obj.get("chatters")).get("viewers");
-		JSONArray globalMods = (JSONArray) ((JSONObject)obj.get("chatters")).get("global_mods");
-		JSONArray mods = (JSONArray) ((JSONObject)obj.get("chatters")).get("moderators");
-		JSONArray admins = (JSONArray) ((JSONObject)obj.get("chatters")).get("admins");
-		
-		///////// Add every user type to one big list of usernames
-		
-		List<String> userNamesInChannel = new ArrayList<String>();
-		
-		userNamesInChannel.addAll(0, staff);
-		userNamesInChannel.addAll(0, viewers);
-		userNamesInChannel.addAll(0, globalMods);
-		userNamesInChannel.addAll(0, mods);
-		userNamesInChannel.addAll(0, admins);	
+		JSONObject obj;
+		try {
+			obj = (JSONObject) jp.parse(new InputStreamReader((InputStream) request.getContent()));
+			JSONArray staff = (JSONArray) ((JSONObject)obj.get("chatters")).get("staff");
+			JSONArray viewers = (JSONArray) ((JSONObject)obj.get("chatters")).get("viewers");
+			JSONArray globalMods = (JSONArray) ((JSONObject)obj.get("chatters")).get("global_mods");
+			JSONArray mods = (JSONArray) ((JSONObject)obj.get("chatters")).get("moderators");
+			JSONArray admins = (JSONArray) ((JSONObject)obj.get("chatters")).get("admins");
 			
-		//////// API call to look up IDs of every user in chat
-		if (userNamesInChannel.size() == 0) return null;
-		return lookupTwitchId(userNamesInChannel).toArray(new SimpleTwitchUser[0]);
+			///////// Add every user type to one big list of usernames
+			
+			List<String> userNamesInChannel = new ArrayList<String>();
+			
+			userNamesInChannel.addAll(0, staff);
+			userNamesInChannel.addAll(0, viewers);
+			userNamesInChannel.addAll(0, globalMods);
+			userNamesInChannel.addAll(0, mods);
+			userNamesInChannel.addAll(0, admins);	
+				
+			//////// API call to look up IDs of every user in chat
+			if (userNamesInChannel.size() == 0) return null;
+			return lookupTwitchId(userNamesInChannel).toArray(new SimpleTwitchUser[0]);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	
 	private List<SimpleTwitchUser> lookupTwitchId(List<String> userNames) {
