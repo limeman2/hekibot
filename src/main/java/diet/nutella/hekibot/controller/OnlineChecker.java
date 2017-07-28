@@ -38,12 +38,16 @@ public class OnlineChecker extends TimerTask {
 			
 			boolean isTracking = LoyaltyTracker.getInstance().isTracking();
 			
-			if (streamOnline && !isTracking) {
-				LoyaltyTracker.getInstance().trackLoyalty(true); 	//// Start tracking loyalty
+			if (streamOnline) {
 				userDAO.connect();
-			} else if (!streamOnline && isTracking) {
-				LoyaltyTracker.getInstance().trackLoyalty(false);	//// Stop tracking loyalty
+				if (!isTracking) {
+					LoyaltyTracker.getInstance().trackLoyalty(true); 	//// Start tracking loyalty
+				}
+			} else {
 				userDAO.disconnect();
+				if (isTracking) {
+					LoyaltyTracker.getInstance().trackLoyalty(false);	//// Stop tracking loyalty
+				}
 			}
 			
 			scan.close();
