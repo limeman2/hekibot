@@ -75,33 +75,29 @@ public class UserDAO {
 	}
 	
 	public void connect() {
-		if(!isConnected) {
-			try {
-				Class.forName("com.mysql.jdbc.Driver");
-				conn = DriverManager.getConnection(
-						BotDriver.props.getProperty("db-URL"),
-						BotDriver.props.getProperty("db-username"), 
-						BotDriver.props.getProperty("db-password"));
-				this.isConnected = true;
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace(); 
-			} catch (SQLException e) {
-				System.out.println("EXCEPTION on " + new Date());
-				e.printStackTrace();
-				this.isConnected = false;
-			}
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection(
+					BotDriver.props.getProperty("db-URL"),
+					BotDriver.props.getProperty("db-username"), 
+					BotDriver.props.getProperty("db-password"));
+			this.isConnected = true;
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace(); 
+		} catch (SQLException e) {
+			System.out.println("EXCEPTION on " + new Date());
+			e.printStackTrace();
+			this.isConnected = false;
 		}
 	}
 	
 	public void disconnect() {
-		if(isConnected) {
-			try {
-				conn.close();
-				this.isConnected = false;
-			} catch (SQLException e) {
-				System.out.println("EXCEPTION on " + new Date());
-				e.printStackTrace();
-			}
+		try {
+			conn.close();
+			this.isConnected = false;
+		} catch (SQLException e) {
+			System.out.println("EXCEPTION on " + new Date());
+			e.printStackTrace();
 		}
 	}
 	
@@ -358,4 +354,6 @@ public class UserDAO {
 		return result;
 	}
 
+	
+	
 }

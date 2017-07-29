@@ -67,6 +67,9 @@ public class BotDriver {
 
 		BotDriver.CHANNEL_NAME = props.getProperty("channel-name");
 		
+		///// Get instance of LoyaltyTracker
+		LoyaltyTracker.getInstance();
+		
 		///// Configuration for the PircBotX
 		Configuration config = new Configuration.Builder()
 				.setAutoNickChange(false)
@@ -77,7 +80,7 @@ public class BotDriver {
 						Integer.parseInt(props.getProperty("irc-port")))
 				.setName("hekibot")
 				.setServerPassword(props.getProperty("oAuth"))
-				.addListener(new MessageListener())
+				.addListener(new MessageListener(LoyaltyTracker.getInstance().getDAO()))
 				.addListener(new ListenerAdapter() {
 					///// Simple listener to make sure we notify
 					///// users in the channel that we've joined
@@ -101,8 +104,7 @@ public class BotDriver {
 				.addAutoJoinChannel(CHANNEL_NAME)
 				.buildConfiguration();
 		
-		///// Get instance of LoyaltyTracker
-		LoyaltyTracker.getInstance();
+		
 		
 		OnlineChecker onlineChecker = new OnlineChecker(LoyaltyTracker.getInstance().getDAO());
 		

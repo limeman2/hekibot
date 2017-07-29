@@ -21,8 +21,8 @@ public class MessageListener extends ListenerAdapter {
 	private UserDAO dao;
 	private GambleTracker tracker;
 	
-	public MessageListener() {
-		dao = new UserDAO();
+	public MessageListener(UserDAO dao) {
+		this.dao = dao;
 		tracker = new GambleTracker();
 	}
 
