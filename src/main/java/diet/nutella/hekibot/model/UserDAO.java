@@ -101,158 +101,125 @@ public class UserDAO {
 		}
 	}
 	
-	public void addCoinsToUser(String name, int amount) {
+	public void addCoinsToUser(String name, int amount) throws SQLException {
 		PreparedStatement stmt = null;
 		
-		try {
-			stmt = conn.prepareStatement(MODIFY_COINS_STATEMENT);
-			stmt.setInt(1, amount);
-			stmt.setString(2, name);
+		stmt = conn.prepareStatement(MODIFY_COINS_STATEMENT);
+		stmt.setInt(1, amount);
+		stmt.setString(2, name);
 
-			stmt.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		stmt.executeUpdate();
 	}
 	
-	public void updateUser(UserInDB user) {
+	public void updateUser(UserInDB user) throws SQLException {
 		PreparedStatement stmt = null;
 		
-		try {
-			stmt = conn.prepareStatement(UPDATE_FULL_USER_STATEMENT);
-			stmt.setInt(1, user.getId());
-			stmt.setString(2, user.getName());
-			stmt.setInt(3, user.getCoins());
-			stmt.setInt(4, user.getTime());
-
-			stmt.setString(5, user.getName());
-			stmt.setInt(6, user.getCoins());
-			stmt.setInt(7, user.getTime());
-			
-			stmt.executeUpdate();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		stmt = conn.prepareStatement(UPDATE_FULL_USER_STATEMENT);
+		stmt.setInt(1, user.getId());
+		stmt.setString(2, user.getName());
+		stmt.setInt(3, user.getCoins());
+		stmt.setInt(4, user.getTime());
+		
+		stmt.setString(5, user.getName());
+		stmt.setInt(6, user.getCoins());
+		stmt.setInt(7, user.getTime());
+		
+		stmt.executeUpdate();
 	}
 	
-	public void updateLoyalty(SimpleTwitchUser user) {
+	public void updateLoyalty(SimpleTwitchUser user) throws SQLException {
 		SimpleTwitchUser[] converter = new SimpleTwitchUser[1];
 		converter[0] = user;
 		updateLoyalty(converter);
 	}
 	
-	public void updateLoyalty(SimpleTwitchUser[] users) {
+	public void updateLoyalty(SimpleTwitchUser[] users) throws SQLException {
 		PreparedStatement stmt = null;
 		
-		try {
-			stmt = conn.prepareStatement(UPDATE_STATEMENT);
-			for(SimpleTwitchUser user : users) {
-				stmt.setInt(1, user.getId());
-				stmt.setString(2, user.getUserName());
-				stmt.setString(3, user.getUserName());
-				stmt.executeUpdate();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		stmt = conn.prepareStatement(UPDATE_STATEMENT);
+		for(SimpleTwitchUser user : users) {
+			stmt.setInt(1, user.getId());
+			stmt.setString(2, user.getUserName());
+			stmt.setString(3, user.getUserName());
+			stmt.executeUpdate();
 		}
 	}
 	
-	public UserInDB getUserFromDatabase(String name) {
+	public UserInDB getUserFromDatabase(String name) throws SQLException {
 		PreparedStatement stmt = null;
+
+		stmt = conn.prepareStatement(GET_USER_BY_NAME_STATEMENT);
+		stmt.setString(1, name);
+		ResultSet rs = stmt.executeQuery();
+		rs.next();
 		
-		try {
-			stmt = conn.prepareStatement(GET_USER_BY_NAME_STATEMENT);
-			stmt.setString(1, name);
-			ResultSet rs = stmt.executeQuery();
-			rs.next();
-			
-			return new UserInDB(
+		return new UserInDB(
+				rs.getInt(1),
+				rs.getString(2),
+				rs.getInt(3),
+				rs.getInt(4)
+				);
+	}
+	
+	public UserInDB[] getTopUsers(int amount) throws SQLException {
+		PreparedStatement stmt = null;
+		UserInDB[] users = new UserInDB[amount];
+		
+		stmt = conn.prepareStatement(GET_TOP_USERS_STATEMENT);
+		stmt.setInt(1, amount);
+		ResultSet rs = stmt.executeQuery();
+		
+		int i = 0;
+		while(rs.next()) {
+			users[i] = new UserInDB(
 					rs.getInt(1),
 					rs.getString(2),
 					rs.getInt(3),
 					rs.getInt(4)
 					);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return null;
-	}
-	
-	public UserInDB[] getTopUsers(int amount) {
-		PreparedStatement stmt = null;
-		UserInDB[] users = new UserInDB[amount];
-		
-		try {
-			stmt = conn.prepareStatement(GET_TOP_USERS_STATEMENT);
-			stmt.setInt(1, amount);
-			ResultSet rs = stmt.executeQuery();
-			
-			int i = 0;
-			while(rs.next()) {
-				users[i] = new UserInDB(
-						rs.getInt(1),
-						rs.getString(2),
-						rs.getInt(3),
-						rs.getInt(4)
-						);
-				i++;
-			}
-			
-		} catch (Exception e) {
-			e.printStackTrace();
+			i++;
 		}
 
 		return users;
 	}
 	
-	public UserInDB[] getTopUsersByTime(int amount) {
+	public UserInDB[] getTopUsersByTime(int amount) throws SQLException {
 		PreparedStatement stmt = null;
 		UserInDB[] users = new UserInDB[amount];
 		
-		try {
-			stmt = conn.prepareStatement(GET_TOP_USERS_BY_TIME_STATEMENT);
-			stmt.setInt(1, amount);
-			ResultSet rs = stmt.executeQuery();
-			
-			int i = 0;
-			while(rs.next()) {
-				users[i] = new UserInDB(
-						rs.getInt(1),
-						rs.getString(2),
-						rs.getInt(3),
-						rs.getInt(4)
-						);
-				i++;
-			}
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return users;
-	}
-	
-	public UserInDB getUserFromDatabase(int id) {
-		PreparedStatement stmt = null;
+		stmt = conn.prepareStatement(GET_TOP_USERS_BY_TIME_STATEMENT);
+		stmt.setInt(1, amount);
+		ResultSet rs = stmt.executeQuery();
 		
-		try {
-			stmt = conn.prepareStatement(GET_USER_BY_ID_STATEMENT);
-			stmt.setInt(1, id);
-			ResultSet rs = stmt.executeQuery();
-			rs.next();
-			
-			return new UserInDB(
+		int i = 0;
+		while(rs.next()) {
+			users[i] = new UserInDB(
 					rs.getInt(1),
 					rs.getString(2),
 					rs.getInt(3),
 					rs.getInt(4)
 					);
-		} catch (Exception e) {
-			e.printStackTrace();
+			i++;
 		}
 
-		return null;
+		return users;
+	}
+	
+	public UserInDB getUserFromDatabase(int id) throws SQLException {
+		PreparedStatement stmt = null;	
+	
+		stmt = conn.prepareStatement(GET_USER_BY_ID_STATEMENT);
+		stmt.setInt(1, id);
+		ResultSet rs = stmt.executeQuery();
+		rs.next();
+		
+		return new UserInDB(
+				rs.getInt(1),
+				rs.getString(2),
+				rs.getInt(3),
+				rs.getInt(4)
+				);
+
 	}
 	
 	public SimpleTwitchUser[] getUsersInChannel() throws IOException {

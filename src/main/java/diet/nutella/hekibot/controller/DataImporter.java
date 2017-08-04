@@ -58,7 +58,7 @@ public class DataImporter implements Callable {
 			}
 			
 			
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

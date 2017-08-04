@@ -1,5 +1,6 @@
 package main.java.diet.nutella.hekibot.model;
 
+import java.sql.SQLException;
 import java.util.Random;
 
 public class Gamble {
@@ -17,9 +18,13 @@ public class Gamble {
 		return user;
 	}
 	
-	public String execute(int amount) {
+	public String execute(int amount) throws SQLException {
 		long timeSinceLastGamble = System.currentTimeMillis() - lastGamble;
-		UserInDB tempUser = dao.getUserFromDatabase(user.getId());
+		UserInDB tempUser;
+		
+		tempUser = dao.getUserFromDatabase(user.getId());
+		
+		
 		if (amount > tempUser.getCoins() || amount < 1) {
 			return tempUser.getName()
 					+ ((amount >= 1) ? ": You don't have enough coins to do that." 

@@ -1,5 +1,6 @@
 package main.java.diet.nutella.hekibot.controller;
 
+import java.sql.SQLException;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -27,12 +28,22 @@ public class MessageListener extends ListenerAdapter {
 	}
 
 	@Override
-	public void onGenericMessage(GenericMessageEvent event) throws Exception {
+	public void onGenericMessage(GenericMessageEvent event) {
 		String name = event.getUser().getNick();
 		/// Hekicoin command
 		/// Respond with the amount of hekicoins the sender has
 		if (event.getMessage().equalsIgnoreCase(HEKICOIN_COMMAND)) {
-			event.respond(dao.getUserFromDatabase(name).getCoins() + " hekicoins ");
+			try {
+				event.respond(dao.getUserFromDatabase(name).getCoins() + " hekicoins ");
+			} catch (SQLException e) {
+				dao.connect();
+				try {
+					event.respond(dao.getUserFromDatabase(name).getCoins() + " hekicoins ");
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+					System.out.println("ATTENTION, mysql exception AFTER reconnection");
+				}
+			}
 		}
 		
 		/// Top 10 command
@@ -43,7 +54,18 @@ public class MessageListener extends ListenerAdapter {
 			/// entries were actually returned
 			int actualLength = 0;
 			
-			UserInDB[] top10 = dao.getTopUsers(10);
+			UserInDB[] top10 = null;
+			try {
+				top10 = dao.getTopUsers(10);
+			} catch (SQLException e) {
+				dao.connect();
+				try {
+					top10 = dao.getTopUsers(10);
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+					System.out.println("ATTENTION, mysql exception AFTER reconnection");
+				}
+			}
 			for (UserInDB usr : top10) {
 				if (usr != null) actualLength++;
 			}
@@ -66,7 +88,18 @@ public class MessageListener extends ListenerAdapter {
 			/// entries were actually returned
 			int actualLength = 0;
 			
-			UserInDB[] top10 = dao.getTopUsersByTime(10);
+			UserInDB[] top10 = null;
+			try {
+				top10 = dao.getTopUsersByTime(10);
+			} catch (SQLException e) {
+				dao.connect();
+				try {
+					top10 = dao.getTopUsersByTime(10);
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+					System.out.println("ATTENTION, mysql exception AFTER reconnection");
+				}
+			}
 			for (UserInDB usr : top10) {
 				if (usr != null) actualLength++;
 			}
@@ -92,13 +125,19 @@ public class MessageListener extends ListenerAdapter {
 				String recipient = scan.next();
 				int amount = scan.nextInt();
 				
-				dao.addCoinsToUser(recipient, amount);
+				try {
+					dao.addCoinsToUser(recipient, amount);
+				} catch (SQLException e) {
+					dao.connect();
+					try {
+						dao.addCoinsToUser(recipient, amount);
+					} catch (Exception ex) {
+						
+					}
+				}
 				event.respondWith(recipient + " has just received " + amount + " hekicoins PogChamp ");
 				scan.close();
 			}
-			
-			
-			
 		}
 		
 		/// Gamble command
@@ -120,10 +159,34 @@ public class MessageListener extends ListenerAdapter {
 				if (storedGamble == null) {
 					Gamble gamble = new Gamble(user, dao);
 					tracker.addGamble(gamble);
+					try {
+						event.respondWith(gamble.execute(amount));
+					} catch (SQLException sqlex) {
+						sqlex.printStackTrace();
+						System.out.println("MySQL exception. Reconnecting.");
+						this.dao.connect();
+						try {
+							event.respondWith(gamble.execute(amount));
+						} catch (SQLException e) {
+							e.printStackTrace();
+							System.out.println("ATTENTION, mysql exception AFTER reconnection");
+						}
+					}
 					
-					event.respondWith(gamble.execute(amount));
 				} else {
-					event.respondWith(storedGamble.execute(amount));
+					try {
+						event.respondWith(storedGamble.execute(amount));
+					} catch (SQLException sqlex) {
+						sqlex.printStackTrace();
+						System.out.println("MySQL exception. Reconnecting.");
+						this.dao.connect();
+						try {
+							event.respondWith(storedGamble.execute(amount));
+						} catch (SQLException e) {
+							e.printStackTrace();
+							System.out.println("ATTENTION, mysql exception AFTER reconnection");
+						}
+					}
 				}
 				
 				scan.close();

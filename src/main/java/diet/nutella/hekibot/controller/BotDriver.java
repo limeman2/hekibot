@@ -104,8 +104,6 @@ public class BotDriver {
 				.addAutoJoinChannel(CHANNEL_NAME)
 				.buildConfiguration();
 		
-		
-		
 		OnlineChecker onlineChecker = new OnlineChecker(LoyaltyTracker.getInstance().getDAO());
 		
 		hekiBot = new PircBotX(config);		
