@@ -90,11 +90,11 @@ public class MessageListener extends ListenerAdapter {
 			
 			UserInDB[] top10 = null;
 			try {
-				top10 = dao.getTopUsersByTime(10);
+				top10 = dao.getTopUsersByTimeIgnoringOutliers(10);
 			} catch (SQLException e) {
 				dao.connect();
 				try {
-					top10 = dao.getTopUsersByTime(10);
+					top10 = dao.getTopUsersByTimeIgnoringOutliers(10);
 				} catch (SQLException e1) {
 					e1.printStackTrace();
 					System.out.println("ATTENTION, mysql exception AFTER reconnection");
@@ -110,7 +110,7 @@ public class MessageListener extends ListenerAdapter {
 				response[i] = (i + 1) + " - " + top10[i].getName() + " " + top10[i].getTime() + " mins";
 			}
 			
-			event.respondWith(org.apache.commons.lang3.StringUtils.join(response));
+			event.respondWith(org.apache.commons.lang3.StringUtils.join(response, ", "));
 		}
 		
 		/// Reward command

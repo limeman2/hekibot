@@ -205,6 +205,25 @@ public class UserDAO {
 		return users;
 	}
 	
+	public UserInDB[] getTopUsersByTimeIgnoringOutliers(int amount) throws SQLException {
+		UserInDB[] total = getTopUsersByTime(amount + 3);
+		List<UserInDB> result = new ArrayList<UserInDB>();
+		
+		for(int i = 0; i < total.length; i++) {
+			if (!total[i].getName().equals("nightbot") &&
+					!total[i].getName().equals("revlobot") &&
+					!total[i].getName().equals("hekibot")) {
+				result.add(total[i]);
+			}
+		}
+		
+		UserInDB[] array = new UserInDB[result.size()];
+		for(int i = 0; i < array.length; i++) {
+			array[i] = result.get(i);
+		}
+		return array;
+	}
+	
 	public UserInDB getUserFromDatabase(int id) throws SQLException {
 		PreparedStatement stmt = null;	
 	
