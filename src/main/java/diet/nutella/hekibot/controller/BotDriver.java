@@ -1,8 +1,10 @@
 package main.java.diet.nutella.hekibot.controller;
 
 
+import java.util.Date;
 import java.util.Properties;
 import java.util.Timer;
+import java.util.concurrent.TimeUnit;
 
 import org.pircbotx.Configuration;
 import org.pircbotx.PircBotX;
@@ -14,6 +16,7 @@ import org.pircbotx.output.OutputIRC;
 
 import main.java.diet.nutella.hekibot.GetProperties;
 import main.java.diet.nutella.hekibot.loyaltytracker.LoyaltyTracker;
+import main.java.diet.nutella.hekibot.model.DatabaseReconnecter;
 
 public class BotDriver {
 	public static Properties props;
@@ -104,12 +107,19 @@ public class BotDriver {
 				.addAutoJoinChannel(CHANNEL_NAME)
 				.buildConfiguration();
 		
+		/// Set up online checker
 		OnlineChecker onlineChecker = new OnlineChecker(LoyaltyTracker.getInstance().getDAO());
-		
-		hekiBot = new PircBotX(config);		
-		
 		Timer onlineTimer = new Timer();
 		onlineTimer.scheduleAtFixedRate(onlineChecker, 0, LoyaltyTracker.DEF_PAYOUT_INTERVAL / 2);
+		
+		/// Set up database reconnecter
+		Timer dbTimer = new Timer();
+		dbTimer.scheduleAtFixedRate(
+				new DatabaseReconnecter(LoyaltyTracker.getInstance().getDAO()), 
+				0, 
+				1000 * 60 * 30);
+		
+		hekiBot = new PircBotX(config);		
 		
 		ui = new HekiBotUI(hekiBot); 
 	}

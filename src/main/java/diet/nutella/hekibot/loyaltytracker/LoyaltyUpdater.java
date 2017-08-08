@@ -10,9 +10,10 @@ public class LoyaltyUpdater extends TimerTask {
 	private UserDAO dao;
 	private CurrentUsersTracker currentUsers;
 	
-	public LoyaltyUpdater(UserDAO dao, CurrentUsersTracker currentUsers) {
+	public LoyaltyUpdater(UserDAO dao) {
 		this.dao = dao;
-		this.currentUsers = currentUsers;
+		this.currentUsers = new CurrentUsersTracker(dao);
+		this.currentUsers.update();
 	}
 
 	@Override

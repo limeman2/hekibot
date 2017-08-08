@@ -43,6 +43,7 @@ public class CurrentUsersTracker {
 			System.out.println("Connection to Twitch API to get users in channel has timed out. API down?");
 		} catch (IOException ioex) {
 			ioex.printStackTrace();
+			users.clear();
 		}
 		users.clear();
 		if (array != null) {

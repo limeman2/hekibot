@@ -23,9 +23,8 @@ public class LoyaltyTracker {
 		this.trackingLoyalty = trackingLoyalty;
 		this.payoutInterval = DEF_PAYOUT_INTERVAL;
 		this.dao = new UserDAO();
-		this.currentUsers = new CurrentUsersTracker(dao);
 		
-		this.loyaltyUpdater = new LoyaltyUpdater(dao, currentUsers);
+		this.loyaltyUpdater = new LoyaltyUpdater(dao);
 	};
 	
 	static {
@@ -51,10 +50,12 @@ public class LoyaltyTracker {
 	
 	public void trackLoyalty(boolean track) {
 		if (track && !this.trackingLoyalty) {
+			this.loyaltyUpdater = new LoyaltyUpdater(dao);
 			this.loyaltyTimer = new Timer();
 			this.loyaltyTimer.scheduleAtFixedRate(loyaltyUpdater, 0, DEF_PAYOUT_INTERVAL);
 			this.trackingLoyalty = true;
 		} else if (!track && this.trackingLoyalty) {
+			this.loyaltyUpdater.cancel();
 			this.loyaltyTimer.cancel();
 			this.trackingLoyalty = false;
 		}
