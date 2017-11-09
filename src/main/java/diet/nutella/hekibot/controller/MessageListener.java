@@ -15,6 +15,7 @@ import main.java.diet.nutella.hekibot.model.UserInDB;
 
 public class MessageListener extends ListenerAdapter {
 	private static final String HEKICOIN_COMMAND = "!hekicoins";
+	private static final String OWN_TIME_COMMAND = "!time";
 	private static final String TOP_10_COMMAND = "!top10";
 	private static final String HOF_COMMAND = "!hof";
 	private static final String REWARD_COMMAND = "!reward";
@@ -30,6 +31,16 @@ public class MessageListener extends ListenerAdapter {
 	@Override
 	public void onGenericMessage(GenericMessageEvent event) {
 		String name = event.getUser().getNick();
+
+		if (event.getMessage().equalsIgnoreCase((OWN_TIME_COMMAND))) {
+			try {
+				event.respond(dao.getUserFromDatabase(name).getTime() + " minutes ");
+			} catch (SQLException e) {
+				event.respond("Something went wrong, sorry. ");
+				e.printStackTrace();
+			}
+		}
+
 		/// Hekicoin command
 		/// Respond with the amount of hekicoins the sender has
 		if (event.getMessage().equalsIgnoreCase(HEKICOIN_COMMAND)) {
