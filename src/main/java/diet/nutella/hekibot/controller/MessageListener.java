@@ -90,11 +90,11 @@ public class MessageListener extends ListenerAdapter {
 			
 			UserInDB[] top10 = null;
 			try {
-				top10 = dao.getTopUsersByTimeIgnoringOutliers(10);
+				top10 = dao.getTopUsersByTime(10);
 			} catch (SQLException e) {
 				dao.connect();
 				try {
-					top10 = dao.getTopUsersByTimeIgnoringOutliers(10);
+					top10 = dao.getTopUsersByTime(10);
 				} catch (SQLException e1) {
 					e1.printStackTrace();
 					System.out.println("ATTENTION, mysql exception AFTER reconnection");

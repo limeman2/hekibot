@@ -55,10 +55,16 @@ public class UserDAO {
 			"SELECT id, name, coins, time FROM users WHERE id=?";
 	
 	private static final String GET_TOP_USERS_STATEMENT =
-			"SELECT id, name, coins, time FROM users ORDER BY coins DESC LIMIT ?";
+			"SELECT id, name, coins, time " +
+					"FROM users " +
+					"WHERE RIGHT(name, 3) != 'bot' " +
+					"ORDER BY coins DESC LIMIT ?";
 	
 	private static final String GET_TOP_USERS_BY_TIME_STATEMENT =
-			"SELECT id, name, coins, time FROM users ORDER BY time DESC LIMIT ?";
+			"SELECT id, name, coins, time " +
+					"FROM users " +
+					"WHERE RIGHT(name, 3) != 'bot' " +
+					"ORDER BY time DESC LIMIT ?";
 	
 	private static final String USER_REQUEST_URL = String.format(
 			"https://tmi.twitch.tv/group/user/%s/chatters", 
@@ -203,25 +209,6 @@ public class UserDAO {
 		}
 
 		return users;
-	}
-	
-	public UserInDB[] getTopUsersByTimeIgnoringOutliers(int amount) throws SQLException {
-		UserInDB[] total = getTopUsersByTime(amount + 3);
-		List<UserInDB> result = new ArrayList<UserInDB>();
-		
-		for(int i = 0; i < total.length; i++) {
-			if (!total[i].getName().equals("nightbot") &&
-					!total[i].getName().equals("revlobot") &&
-					!total[i].getName().equals("hekibot")) {
-				result.add(total[i]);
-			}
-		}
-		
-		UserInDB[] array = new UserInDB[result.size()];
-		for(int i = 0; i < array.length; i++) {
-			array[i] = result.get(i);
-		}
-		return array;
 	}
 	
 	public UserInDB getUserFromDatabase(int id) throws SQLException {
