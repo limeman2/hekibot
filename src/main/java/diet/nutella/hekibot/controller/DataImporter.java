@@ -21,10 +21,13 @@ public class DataImporter implements Callable {
 	public void call() {
 		Scanner scan;
 		try {
-			scan = new Scanner(new File("hekimae_points.csv"));
+			File jarPath = new File(DataImporter.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+			String propertiesPath = jarPath.getParentFile().getAbsolutePath() + "/hekimae_points.csv";
+
+			scan = new Scanner(new File(propertiesPath));
 			scan.nextLine();
-			
-			String line = new String();
+
+			String line;
 			List<UserInDB> list = new ArrayList<UserInDB>();
 			
 			int id;
@@ -38,9 +41,10 @@ public class DataImporter implements Callable {
 				lineReader.useDelimiter(",");
 				
 				name = lineReader.next();
-				id = lineReader.nextInt();
 				coins = lineReader.nextInt();
 				time = lineReader.nextInt();
+				id = lineReader.nextInt();
+
 				lineReader.close();
 				
 				list.add(new UserInDB(id, name, coins, time));
