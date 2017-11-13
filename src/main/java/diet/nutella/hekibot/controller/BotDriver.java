@@ -1,9 +1,7 @@
 package main.java.diet.nutella.hekibot.controller;
 
 
-import java.util.Date;
-import java.util.Properties;
-import java.util.Timer;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import org.pircbotx.Configuration;
@@ -12,6 +10,7 @@ import org.pircbotx.cap.EnableCapHandler;
 import org.pircbotx.hooks.ListenerAdapter;
 import org.pircbotx.hooks.events.DisconnectEvent;
 import org.pircbotx.hooks.events.JoinEvent;
+import org.pircbotx.hooks.events.UnknownEvent;
 import org.pircbotx.output.OutputIRC;
 
 import main.java.diet.nutella.hekibot.GetProperties;
@@ -20,7 +19,7 @@ import main.java.diet.nutella.hekibot.model.DatabaseReconnecter;
 
 public class BotDriver {
 	public static Properties props;
-	public static String CHANNEL_NAME = "";
+	public static String CHANNEL_NAME;
 	
 	private static String[] MOD_LIST = {
 			"hekimae",
@@ -66,19 +65,24 @@ public class BotDriver {
 	
 	public static void main(String[] args) { 
 		//// Set up Properties to be used widely in the project
-		props = new GetProperties().getProperties();
+		props = GetProperties.getConfigProperties();
+
+		// Get Redeem Commands
+		Map<String, RedeemCommand> commands = GetProperties.getRedeemCommands();
 
 		BotDriver.CHANNEL_NAME = props.getProperty("channel-name");
 		
 		///// Get instance of LoyaltyTracker
 		LoyaltyTracker.getInstance();
-		
+
 		///// Configuration for the PircBotX
 		Configuration config = new Configuration.Builder()
 				.setAutoNickChange(false)
 				.setOnJoinWhoEnabled(false)
 				.setCapEnabled(true)
 				.addCapHandler(new EnableCapHandler("twitch.tv/membership"))
+				.addCapHandler(new EnableCapHandler("twitch.tv/tags"))
+				.addCapHandler(new EnableCapHandler("twitch.tv/commands"))
 				.addServer(props.getProperty("irc-host"), 
 						Integer.parseInt(props.getProperty("irc-port")))
 				.setName("hekibot")
@@ -104,7 +108,9 @@ public class BotDriver {
 						event.getBot().startBot();
 					}	
 				})
+				.addListener(new RedeemCommandListener(commands))
 				.addAutoJoinChannel(CHANNEL_NAME)
+				.addListener(new SubscriberListener(LoyaltyTracker.getInstance().getDAO()))
 				.buildConfiguration();
 		
 		/// Set up online checker
@@ -119,8 +125,8 @@ public class BotDriver {
 				0, 
 				1000 * 60 * 30);
 		
-		hekiBot = new PircBotX(config);		
-		
+		hekiBot = new PircBotX(config);
+
 		ui = new HekiBotUI(hekiBot); 
 	}
 }
